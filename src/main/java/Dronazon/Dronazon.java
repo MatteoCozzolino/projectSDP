@@ -5,9 +5,6 @@ import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class Dronazon {
 
     public static void main(String[] args) {
@@ -26,21 +23,17 @@ public class Dronazon {
             MqttConnectOptions connOpts = new MqttConnectOptions();
             connOpts.setCleanSession(true);
 
-            Map<Integer, DeliveriesGenerator> payload;
-
-            System.out.println(clientId + " Connecting Broker " + broker);
+            System.out.println("Connecting Broker " + broker);
             client.connect(connOpts);
-            System.out.println(clientId + " Connected");
+            System.out.println(" Connected!");
 
             while(true){
 
-                delivery.generateDelivery();
-                payload = new HashMap<>();
-                payload.put(deliveryID , delivery);
+                delivery.generateDelivery(deliveryID);
                 deliveryID ++;
 
                 gson = new Gson();
-                String deliveryToJson = gson.toJson(payload);
+                String deliveryToJson = gson.toJson(delivery);
 
                 MqttMessage message = new MqttMessage(deliveryToJson.getBytes());
                 message.setQos(qos);
@@ -55,6 +48,5 @@ public class Dronazon {
             e.printStackTrace();
         }
     }
-
 
 }

@@ -1,0 +1,56 @@
+syntax = "proto2";
+package proto;
+
+message DroneInfo {
+
+  required int32 id = 1;
+  required int32  port = 2;
+  required string host = 3;
+  required int32 coordinate_x = 4;
+  required int32 coordinate_y = 5;
+  required int32 battery = 6;       //non necessario in fase di presentazione
+
+}
+
+message DroneStats {
+
+  required float timestamp = 1;
+  required int32 coordinate_x = 2;
+  required int32 coordinate_y = 3;
+  required float km = 4;
+  required float avgPM10 = 5;
+  required int32 battery = 6;
+
+}
+
+message DroneData {
+
+  required int32 id = 1;
+  required int32  port = 2;
+  required string host = 3;
+
+}
+
+message DeliveryInfo{
+
+  required int32 deliveryID = 1;
+  required int32 pickUp_x = 2;
+  required int32 pickUp_y = 3;
+  required int32 delivery_x = 4;
+  required int32 delivery_y = 5;
+
+}
+
+message Empty{}
+
+service DronesMessages {
+  rpc greet(DroneData) returns (DroneData);   //Metodo usato da un drone all'ingresso nella rete p2p
+  rpc sendStats (DroneStats) returns (Empty);   //Metodo per l'invio delle statistiche dei droni al master
+  rpc election (DroneData) returns (Empty);   //Metodo per effettuare l'elezione nell'anello
+  rpc elected (DroneData) returns (Empty); //Metodo per la notifica del nuovo drone master appena eletto
+  rpc assignDelivery (DeliveryInfo) returns (Empty);  //Metodo usato dal drone master per assegnare la consegna
+  rpc getDroneInformations (Empty) returns (DroneInfo);   //Metodo usato dal drone master appena eletto per raccogliere le informazioni su posizione e batteria di tutti i droni della smart city
+  rpc sendDroneInfoToMaster (DroneInfo) returns (Empty);    //Metodo usato da un drone appena entrato nella rete per mandare le proprie informazioni al master
+
+}
+

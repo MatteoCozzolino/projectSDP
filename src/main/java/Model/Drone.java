@@ -7,17 +7,19 @@ public class Drone {
 
     private int id;
     private int port;
-    private String serverHost;
+    private String host;
     private int batteryLevel = 100;
     private int position_x;
     private int position_y;
+    private boolean master = false;
+    public boolean deliveryInProgress = false;
 
     public Drone(){}
 
-    public Drone(int id, int port, String serverHost){
+    public Drone(int id, int port, String host){
         this.id=id;
         this.port=port;
-        this.serverHost = serverHost;
+        this.host = host;
     }
 
     public int getId() {
@@ -28,8 +30,8 @@ public class Drone {
         return port;
     }
 
-    public String getServerHost() {
-        return serverHost;
+    public String getHost() {
+        return host;
     }
 
     public int getBatteryLevel() {
@@ -46,9 +48,13 @@ public class Drone {
 
     }
 
-    public void setPosition(Coordinates position){
-        position_x = position.getX();
-        position_y = position.getY();
+    public void setPosition(int x, int y){
+        position_x = x;
+        position_y = y;
+    }
+
+    public Coordinates getCoordinates(){
+        return new Coordinates(getPosition_x(),getPosition_y());
     }
 
     public int getPosition_x(){
@@ -57,5 +63,13 @@ public class Drone {
 
     public int getPosition_y() {
         return position_y;
+    }
+
+    public boolean isMaster() {
+        return master;
+    }
+
+    public void setMaster(boolean master) {
+        this.master = master;
     }
 }

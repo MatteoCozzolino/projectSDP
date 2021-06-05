@@ -1,0 +1,36 @@
+
+message DroneData {
+
+  required int32 id = 1;
+  required int32  port = 2;
+  required string host = 3;
+
+}
+
+message DroneStats {
+
+  required float timestamp = 1;
+  required int32 coordinate_x = 2;
+  required int32 coordinate_y = 3;
+  required int32 km = 4;
+  required float avgPM10 = 5;
+  required int32 battery = 6;
+
+}
+
+message MasterDrone {
+  required int32 id = 1;
+  required int32  port = 2;
+  required string host = 3;
+}
+
+message Empty{}
+
+service Greeter {
+  rpc greet(DroneData) returns (MasterDrone);
+}
+
+service DroneStatsSend {
+  rpc sendStats (DroneStats) returns (Empty);
+}
+

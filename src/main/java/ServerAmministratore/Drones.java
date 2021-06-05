@@ -65,9 +65,8 @@ public class Drones {
 
         int x = (int) Math.floor(Math.random()*11);
         int y = (int) Math.floor(Math.random()*11);
-        Coordinates startingCoordinates = new Coordinates(x,y);
-        drone.setPosition(startingCoordinates);
+
+        drone.setPosition(x,y);
 
     }
 }
-

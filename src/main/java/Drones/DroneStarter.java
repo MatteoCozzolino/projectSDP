@@ -1,47 +1,63 @@
 package Drones;
 
+import Drones.Threads.InputListenerThread;
 import Model.Drone;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class DroneStarter {
 
     private int id;
-    private String serverHost;
+    private String host;
     private int serverPort;
     private int port;
     private Drone drone;
+    private Scanner scanner;
+    private InputListenerThread inputListenerThread;
+        ArrayList<Drone> list;
 
 
-    public DroneStarter( String serverHost, int serverPort ) {
+    public DroneStarter(String host, int serverPort ) {
 
-        Scanner scanner = new Scanner(System.in);
+        scanner = new Scanner(System.in);
 
-        this.serverHost = serverHost;
+        this.host = host;
         this.serverPort = serverPort;
 
         System.out.println("Type drone ID...");
         this.id = scanner.nextInt();
         System.out.println("Type drone port...");
         this.port = scanner.nextInt();
-        drone = new Drone(this.id, this.port, serverHost);
+        drone = new Drone(this.id, this.port, host);
 
         try{
-            DronesRESTClient.getInstance().initialize(serverHost , serverPort , drone);
+            DroneRESTClient.getInstance().initialize(host, serverPort , drone);
 
-            Scanner test = new Scanner(System.in);
-            int choice = test.nextInt();
+            list = DroneRESTClient.getInstance().addRequest();
 
-            if (choice == 1)
-                DronesRESTClient.getInstance().addRequest();
-            if (choice == 2)
-                DronesRESTClient.getInstance().deleteRequest(drone);
+            DroneController.getInstance().initialize(list , drone);
 
-            //prints the recieved message from server?
-            System.out.println();
+            startThreads();
+
+            DroneController.getInstance().test();
+            //DroneController.getInstance().droneLifecycle();
+
+            //mi accorgo che drone è uscito quando:
+            // - master gli assegna una consegna e non risponde (devo aggiornare succ e lista di tutti e assegnare la  consegna a un altro)
+            // - durante elezione il mio succ non esiste (aggiorno il mio succ e la lista di tutti)
+            // - quando un drone entra e fa greeting uno dei droni non risponde (aggiorno succ e lista di tutti)
+
         }
-        catch (Exception e){                //da gestire se il drone non è nella rete
+        catch (Exception e){
             e.printStackTrace();}
+
+    }
+
+    private void startThreads() {
+
+        inputListenerThread = new InputListenerThread();
+        inputListenerThread.start();
 
     }
 

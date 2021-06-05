@@ -1,24 +1,28 @@
 package Drones;
 
 import Model.Drone;
+import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 
-public class DronesRESTClient {
+import java.util.ArrayList;
+
+
+public class DroneRESTClient {
 
     private String serverHost;
     private int serverPort;
     private Drone drone;
     private Client client;
 
-    private static DronesRESTClient dronesRESTClient;
+    private static DroneRESTClient droneRESTClient;
 
-    public static DronesRESTClient getInstance(){
-        if(dronesRESTClient == null)
-            dronesRESTClient = new DronesRESTClient();
-        return dronesRESTClient;
+    public static DroneRESTClient getInstance(){
+        if(droneRESTClient == null)
+            droneRESTClient = new DroneRESTClient();
+        return droneRESTClient;
     }
 
     public void initialize (String serverHost, int serverPort, Drone drone){
@@ -27,7 +31,9 @@ public class DronesRESTClient {
         this.drone = drone;
     }
 
-    public void addRequest(){
+    public ArrayList<Drone> addRequest(){
+
+        ArrayList<Drone> droneList = null;
 
         try {
             Gson gson = new Gson();
@@ -38,21 +44,26 @@ public class DronesRESTClient {
             ClientResponse response = webResource.type("application/json").accept("application/json").post(ClientResponse.class, droneToJson);
 
             if (response.getStatus() == 400) {
-                throw new RuntimeException("Operation failed with error code: " + response.getStatus());
+                System.out.println("A drone with the same ID already exists, please start again!");
+                System.exit(-1);
             }
             else if (response.getStatus() == 200) {
 
-                System.out.println(response.getEntity(String.class));
+                droneList = gson.fromJson(response.getEntity(String.class), new TypeToken<ArrayList<Drone>>(){}.getType());
+                System.out.println("Connection succesful! Waiting for peers...");
+
             }
 
         }catch (Exception e){
-            System.out.println("Unable to reach the server");       //notificare che l'id esiste già
+            System.out.println("Unable to reach the server");
             System.exit(-1);
         }
+
+        return droneList;
     }
 
     //review quando si fa la logica dei droni
-    public void deleteRequest (Drone drone) {
+    public void leaveRequest (Drone drone) {
 
         try{
             Gson gson = new Gson();
@@ -62,7 +73,7 @@ public class DronesRESTClient {
             WebResource webResource = client.resource("http://" + serverHost + ":" + serverPort + "/drones/delete");
             ClientResponse response = webResource.type("application/json").accept("application/json").post(ClientResponse.class, droneToJson);
 
-            System.out.println(response.getEntity(String.class));
+            System.out.println(response.getEntity(String.class));       //temp
 
         } catch (Exception e) {
             System.out.println("Unable to reach the server");       //se il drone non esiste già?
