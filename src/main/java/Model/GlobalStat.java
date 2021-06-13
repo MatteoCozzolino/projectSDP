@@ -11,6 +11,27 @@ public class GlobalStat {
     private float avgNumberDeliveries;
     private float avgKm;
     private float avgPM10;
+
+    public void setTimestamp(float timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public void setAvgNumberDeliveries(float avgNumberDeliveries) {
+        this.avgNumberDeliveries = avgNumberDeliveries;
+    }
+
+    public void setAvgKm(float avgKm) {
+        this.avgKm = avgKm;
+    }
+
+    public void setAvgPM10(float avgPM10) {
+        this.avgPM10 = avgPM10;
+    }
+
+    public void setAvgResidualBatteries(float avgResidualBatteries) {
+        this.avgResidualBatteries = avgResidualBatteries;
+    }
+
     private float avgResidualBatteries;
 
     public GlobalStat(){

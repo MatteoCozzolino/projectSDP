@@ -244,6 +244,68 @@ public final class DronesMessagesGrpc {
     return getSendDroneInfoToMasterMethod;
   }
 
+  private static volatile io.grpc.MethodDescriptor<proto.DronesMessagesOuterClass.Empty,
+      proto.DronesMessagesOuterClass.Empty> getAliveMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "alive",
+      requestType = proto.DronesMessagesOuterClass.Empty.class,
+      responseType = proto.DronesMessagesOuterClass.Empty.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<proto.DronesMessagesOuterClass.Empty,
+      proto.DronesMessagesOuterClass.Empty> getAliveMethod() {
+    io.grpc.MethodDescriptor<proto.DronesMessagesOuterClass.Empty, proto.DronesMessagesOuterClass.Empty> getAliveMethod;
+    if ((getAliveMethod = DronesMessagesGrpc.getAliveMethod) == null) {
+      synchronized (DronesMessagesGrpc.class) {
+        if ((getAliveMethod = DronesMessagesGrpc.getAliveMethod) == null) {
+          DronesMessagesGrpc.getAliveMethod = getAliveMethod =
+              io.grpc.MethodDescriptor.<proto.DronesMessagesOuterClass.Empty, proto.DronesMessagesOuterClass.Empty>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "alive"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  proto.DronesMessagesOuterClass.Empty.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  proto.DronesMessagesOuterClass.Empty.getDefaultInstance()))
+              .setSchemaDescriptor(new DronesMessagesMethodDescriptorSupplier("alive"))
+              .build();
+        }
+      }
+    }
+    return getAliveMethod;
+  }
+
+  private static volatile io.grpc.MethodDescriptor<proto.DronesMessagesOuterClass.DroneData,
+      proto.DronesMessagesOuterClass.Empty> getRemoveMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "remove",
+      requestType = proto.DronesMessagesOuterClass.DroneData.class,
+      responseType = proto.DronesMessagesOuterClass.Empty.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<proto.DronesMessagesOuterClass.DroneData,
+      proto.DronesMessagesOuterClass.Empty> getRemoveMethod() {
+    io.grpc.MethodDescriptor<proto.DronesMessagesOuterClass.DroneData, proto.DronesMessagesOuterClass.Empty> getRemoveMethod;
+    if ((getRemoveMethod = DronesMessagesGrpc.getRemoveMethod) == null) {
+      synchronized (DronesMessagesGrpc.class) {
+        if ((getRemoveMethod = DronesMessagesGrpc.getRemoveMethod) == null) {
+          DronesMessagesGrpc.getRemoveMethod = getRemoveMethod =
+              io.grpc.MethodDescriptor.<proto.DronesMessagesOuterClass.DroneData, proto.DronesMessagesOuterClass.Empty>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "remove"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  proto.DronesMessagesOuterClass.DroneData.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  proto.DronesMessagesOuterClass.Empty.getDefaultInstance()))
+              .setSchemaDescriptor(new DronesMessagesMethodDescriptorSupplier("remove"))
+              .build();
+        }
+      }
+    }
+    return getRemoveMethod;
+  }
+
   /**
    * Creates a new async stub that supports all call types for the service
    */
@@ -282,6 +344,9 @@ public final class DronesMessagesGrpc {
     }
 
     /**
+     * <pre>
+     *Metodo per l'invio delle statistiche dei droni al master
+     * </pre>
      */
     public void sendStats(proto.DronesMessagesOuterClass.DroneStats request,
         io.grpc.stub.StreamObserver<proto.DronesMessagesOuterClass.Empty> responseObserver) {
@@ -289,6 +354,9 @@ public final class DronesMessagesGrpc {
     }
 
     /**
+     * <pre>
+     *Metodo per effettuare l'elezione nell'anello
+     * </pre>
      */
     public void election(proto.DronesMessagesOuterClass.DroneData request,
         io.grpc.stub.StreamObserver<proto.DronesMessagesOuterClass.Empty> responseObserver) {
@@ -296,6 +364,9 @@ public final class DronesMessagesGrpc {
     }
 
     /**
+     * <pre>
+     *Metodo per la notifica del nuovo drone master appena eletto
+     * </pre>
      */
     public void elected(proto.DronesMessagesOuterClass.DroneData request,
         io.grpc.stub.StreamObserver<proto.DronesMessagesOuterClass.Empty> responseObserver) {
@@ -313,6 +384,9 @@ public final class DronesMessagesGrpc {
     }
 
     /**
+     * <pre>
+     *Metodo usato dal drone master appena eletto per raccogliere le informazioni su posizione e batteria di tutti i droni della smart city
+     * </pre>
      */
     public void getDroneInformations(proto.DronesMessagesOuterClass.Empty request,
         io.grpc.stub.StreamObserver<proto.DronesMessagesOuterClass.DroneInfo> responseObserver) {
@@ -320,10 +394,33 @@ public final class DronesMessagesGrpc {
     }
 
     /**
+     * <pre>
+     *Metodo usato da un drone appena entrato nella rete per mandare le proprie informazioni al master
+     * </pre>
      */
     public void sendDroneInfoToMaster(proto.DronesMessagesOuterClass.DroneInfo request,
         io.grpc.stub.StreamObserver<proto.DronesMessagesOuterClass.Empty> responseObserver) {
       asyncUnimplementedUnaryCall(getSendDroneInfoToMasterMethod(), responseObserver);
+    }
+
+    /**
+     * <pre>
+     *Metodo usato per controllare che il drone successivo nell'anello è alive
+     * </pre>
+     */
+    public void alive(proto.DronesMessagesOuterClass.Empty request,
+        io.grpc.stub.StreamObserver<proto.DronesMessagesOuterClass.Empty> responseObserver) {
+      asyncUnimplementedUnaryCall(getAliveMethod(), responseObserver);
+    }
+
+    /**
+     * <pre>
+     *Metodo usato per notificare i peer quando è stato rilevato un drone offline
+     * </pre>
+     */
+    public void remove(proto.DronesMessagesOuterClass.DroneData request,
+        io.grpc.stub.StreamObserver<proto.DronesMessagesOuterClass.Empty> responseObserver) {
+      asyncUnimplementedUnaryCall(getRemoveMethod(), responseObserver);
     }
 
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
@@ -377,6 +474,20 @@ public final class DronesMessagesGrpc {
                 proto.DronesMessagesOuterClass.DroneInfo,
                 proto.DronesMessagesOuterClass.Empty>(
                   this, METHODID_SEND_DRONE_INFO_TO_MASTER)))
+          .addMethod(
+            getAliveMethod(),
+            asyncUnaryCall(
+              new MethodHandlers<
+                proto.DronesMessagesOuterClass.Empty,
+                proto.DronesMessagesOuterClass.Empty>(
+                  this, METHODID_ALIVE)))
+          .addMethod(
+            getRemoveMethod(),
+            asyncUnaryCall(
+              new MethodHandlers<
+                proto.DronesMessagesOuterClass.DroneData,
+                proto.DronesMessagesOuterClass.Empty>(
+                  this, METHODID_REMOVE)))
           .build();
     }
   }
@@ -411,6 +522,9 @@ public final class DronesMessagesGrpc {
     }
 
     /**
+     * <pre>
+     *Metodo per l'invio delle statistiche dei droni al master
+     * </pre>
      */
     public void sendStats(proto.DronesMessagesOuterClass.DroneStats request,
         io.grpc.stub.StreamObserver<proto.DronesMessagesOuterClass.Empty> responseObserver) {
@@ -419,6 +533,9 @@ public final class DronesMessagesGrpc {
     }
 
     /**
+     * <pre>
+     *Metodo per effettuare l'elezione nell'anello
+     * </pre>
      */
     public void election(proto.DronesMessagesOuterClass.DroneData request,
         io.grpc.stub.StreamObserver<proto.DronesMessagesOuterClass.Empty> responseObserver) {
@@ -427,6 +544,9 @@ public final class DronesMessagesGrpc {
     }
 
     /**
+     * <pre>
+     *Metodo per la notifica del nuovo drone master appena eletto
+     * </pre>
      */
     public void elected(proto.DronesMessagesOuterClass.DroneData request,
         io.grpc.stub.StreamObserver<proto.DronesMessagesOuterClass.Empty> responseObserver) {
@@ -446,6 +566,9 @@ public final class DronesMessagesGrpc {
     }
 
     /**
+     * <pre>
+     *Metodo usato dal drone master appena eletto per raccogliere le informazioni su posizione e batteria di tutti i droni della smart city
+     * </pre>
      */
     public void getDroneInformations(proto.DronesMessagesOuterClass.Empty request,
         io.grpc.stub.StreamObserver<proto.DronesMessagesOuterClass.DroneInfo> responseObserver) {
@@ -454,11 +577,36 @@ public final class DronesMessagesGrpc {
     }
 
     /**
+     * <pre>
+     *Metodo usato da un drone appena entrato nella rete per mandare le proprie informazioni al master
+     * </pre>
      */
     public void sendDroneInfoToMaster(proto.DronesMessagesOuterClass.DroneInfo request,
         io.grpc.stub.StreamObserver<proto.DronesMessagesOuterClass.Empty> responseObserver) {
       asyncUnaryCall(
           getChannel().newCall(getSendDroneInfoToMasterMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     * <pre>
+     *Metodo usato per controllare che il drone successivo nell'anello è alive
+     * </pre>
+     */
+    public void alive(proto.DronesMessagesOuterClass.Empty request,
+        io.grpc.stub.StreamObserver<proto.DronesMessagesOuterClass.Empty> responseObserver) {
+      asyncUnaryCall(
+          getChannel().newCall(getAliveMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     * <pre>
+     *Metodo usato per notificare i peer quando è stato rilevato un drone offline
+     * </pre>
+     */
+    public void remove(proto.DronesMessagesOuterClass.DroneData request,
+        io.grpc.stub.StreamObserver<proto.DronesMessagesOuterClass.Empty> responseObserver) {
+      asyncUnaryCall(
+          getChannel().newCall(getRemoveMethod(), getCallOptions()), request, responseObserver);
     }
   }
 
@@ -491,6 +639,9 @@ public final class DronesMessagesGrpc {
     }
 
     /**
+     * <pre>
+     *Metodo per l'invio delle statistiche dei droni al master
+     * </pre>
      */
     public proto.DronesMessagesOuterClass.Empty sendStats(proto.DronesMessagesOuterClass.DroneStats request) {
       return blockingUnaryCall(
@@ -498,6 +649,9 @@ public final class DronesMessagesGrpc {
     }
 
     /**
+     * <pre>
+     *Metodo per effettuare l'elezione nell'anello
+     * </pre>
      */
     public proto.DronesMessagesOuterClass.Empty election(proto.DronesMessagesOuterClass.DroneData request) {
       return blockingUnaryCall(
@@ -505,6 +659,9 @@ public final class DronesMessagesGrpc {
     }
 
     /**
+     * <pre>
+     *Metodo per la notifica del nuovo drone master appena eletto
+     * </pre>
      */
     public proto.DronesMessagesOuterClass.Empty elected(proto.DronesMessagesOuterClass.DroneData request) {
       return blockingUnaryCall(
@@ -522,6 +679,9 @@ public final class DronesMessagesGrpc {
     }
 
     /**
+     * <pre>
+     *Metodo usato dal drone master appena eletto per raccogliere le informazioni su posizione e batteria di tutti i droni della smart city
+     * </pre>
      */
     public proto.DronesMessagesOuterClass.DroneInfo getDroneInformations(proto.DronesMessagesOuterClass.Empty request) {
       return blockingUnaryCall(
@@ -529,10 +689,33 @@ public final class DronesMessagesGrpc {
     }
 
     /**
+     * <pre>
+     *Metodo usato da un drone appena entrato nella rete per mandare le proprie informazioni al master
+     * </pre>
      */
     public proto.DronesMessagesOuterClass.Empty sendDroneInfoToMaster(proto.DronesMessagesOuterClass.DroneInfo request) {
       return blockingUnaryCall(
           getChannel(), getSendDroneInfoToMasterMethod(), getCallOptions(), request);
+    }
+
+    /**
+     * <pre>
+     *Metodo usato per controllare che il drone successivo nell'anello è alive
+     * </pre>
+     */
+    public proto.DronesMessagesOuterClass.Empty alive(proto.DronesMessagesOuterClass.Empty request) {
+      return blockingUnaryCall(
+          getChannel(), getAliveMethod(), getCallOptions(), request);
+    }
+
+    /**
+     * <pre>
+     *Metodo usato per notificare i peer quando è stato rilevato un drone offline
+     * </pre>
+     */
+    public proto.DronesMessagesOuterClass.Empty remove(proto.DronesMessagesOuterClass.DroneData request) {
+      return blockingUnaryCall(
+          getChannel(), getRemoveMethod(), getCallOptions(), request);
     }
   }
 
@@ -566,6 +749,9 @@ public final class DronesMessagesGrpc {
     }
 
     /**
+     * <pre>
+     *Metodo per l'invio delle statistiche dei droni al master
+     * </pre>
      */
     public com.google.common.util.concurrent.ListenableFuture<proto.DronesMessagesOuterClass.Empty> sendStats(
         proto.DronesMessagesOuterClass.DroneStats request) {
@@ -574,6 +760,9 @@ public final class DronesMessagesGrpc {
     }
 
     /**
+     * <pre>
+     *Metodo per effettuare l'elezione nell'anello
+     * </pre>
      */
     public com.google.common.util.concurrent.ListenableFuture<proto.DronesMessagesOuterClass.Empty> election(
         proto.DronesMessagesOuterClass.DroneData request) {
@@ -582,6 +771,9 @@ public final class DronesMessagesGrpc {
     }
 
     /**
+     * <pre>
+     *Metodo per la notifica del nuovo drone master appena eletto
+     * </pre>
      */
     public com.google.common.util.concurrent.ListenableFuture<proto.DronesMessagesOuterClass.Empty> elected(
         proto.DronesMessagesOuterClass.DroneData request) {
@@ -601,6 +793,9 @@ public final class DronesMessagesGrpc {
     }
 
     /**
+     * <pre>
+     *Metodo usato dal drone master appena eletto per raccogliere le informazioni su posizione e batteria di tutti i droni della smart city
+     * </pre>
      */
     public com.google.common.util.concurrent.ListenableFuture<proto.DronesMessagesOuterClass.DroneInfo> getDroneInformations(
         proto.DronesMessagesOuterClass.Empty request) {
@@ -609,11 +804,36 @@ public final class DronesMessagesGrpc {
     }
 
     /**
+     * <pre>
+     *Metodo usato da un drone appena entrato nella rete per mandare le proprie informazioni al master
+     * </pre>
      */
     public com.google.common.util.concurrent.ListenableFuture<proto.DronesMessagesOuterClass.Empty> sendDroneInfoToMaster(
         proto.DronesMessagesOuterClass.DroneInfo request) {
       return futureUnaryCall(
           getChannel().newCall(getSendDroneInfoToMasterMethod(), getCallOptions()), request);
+    }
+
+    /**
+     * <pre>
+     *Metodo usato per controllare che il drone successivo nell'anello è alive
+     * </pre>
+     */
+    public com.google.common.util.concurrent.ListenableFuture<proto.DronesMessagesOuterClass.Empty> alive(
+        proto.DronesMessagesOuterClass.Empty request) {
+      return futureUnaryCall(
+          getChannel().newCall(getAliveMethod(), getCallOptions()), request);
+    }
+
+    /**
+     * <pre>
+     *Metodo usato per notificare i peer quando è stato rilevato un drone offline
+     * </pre>
+     */
+    public com.google.common.util.concurrent.ListenableFuture<proto.DronesMessagesOuterClass.Empty> remove(
+        proto.DronesMessagesOuterClass.DroneData request) {
+      return futureUnaryCall(
+          getChannel().newCall(getRemoveMethod(), getCallOptions()), request);
     }
   }
 
@@ -624,6 +844,8 @@ public final class DronesMessagesGrpc {
   private static final int METHODID_ASSIGN_DELIVERY = 4;
   private static final int METHODID_GET_DRONE_INFORMATIONS = 5;
   private static final int METHODID_SEND_DRONE_INFO_TO_MASTER = 6;
+  private static final int METHODID_ALIVE = 7;
+  private static final int METHODID_REMOVE = 8;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -668,6 +890,14 @@ public final class DronesMessagesGrpc {
           break;
         case METHODID_SEND_DRONE_INFO_TO_MASTER:
           serviceImpl.sendDroneInfoToMaster((proto.DronesMessagesOuterClass.DroneInfo) request,
+              (io.grpc.stub.StreamObserver<proto.DronesMessagesOuterClass.Empty>) responseObserver);
+          break;
+        case METHODID_ALIVE:
+          serviceImpl.alive((proto.DronesMessagesOuterClass.Empty) request,
+              (io.grpc.stub.StreamObserver<proto.DronesMessagesOuterClass.Empty>) responseObserver);
+          break;
+        case METHODID_REMOVE:
+          serviceImpl.remove((proto.DronesMessagesOuterClass.DroneData) request,
               (io.grpc.stub.StreamObserver<proto.DronesMessagesOuterClass.Empty>) responseObserver);
           break;
         default:
@@ -738,6 +968,8 @@ public final class DronesMessagesGrpc {
               .addMethod(getAssignDeliveryMethod())
               .addMethod(getGetDroneInformationsMethod())
               .addMethod(getSendDroneInfoToMasterMethod())
+              .addMethod(getAliveMethod())
+              .addMethod(getRemoveMethod())
               .build();
         }
       }

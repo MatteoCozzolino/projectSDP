@@ -51,6 +51,7 @@ service DronesMessages {
   rpc assignDelivery (DeliveryInfo) returns (Empty);  //Metodo usato dal drone master per assegnare la consegna
   rpc getDroneInformations (Empty) returns (DroneInfo);   //Metodo usato dal drone master appena eletto per raccogliere le informazioni su posizione e batteria di tutti i droni della smart city
   rpc sendDroneInfoToMaster (DroneInfo) returns (Empty);    //Metodo usato da un drone appena entrato nella rete per mandare le proprie informazioni al master
-
+  rpc alive (Empty) returns (Empty); //Metodo usato per controllare che il drone successivo nell'anello è alive
+  rpc remove (DroneData) returns (Empty); //Metodo usato per notificare i peer quando è stato rilevato un drone offline
 }
 

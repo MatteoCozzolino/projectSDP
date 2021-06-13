@@ -15,7 +15,7 @@ public class DroneStarter {
     private Drone drone;
     private Scanner scanner;
     private InputListenerThread inputListenerThread;
-        ArrayList<Drone> list;
+    private ArrayList<Drone> list;
 
 
     public DroneStarter(String host, int serverPort ) {
@@ -27,21 +27,26 @@ public class DroneStarter {
 
         System.out.println("Type drone ID...");
         this.id = scanner.nextInt();
-        System.out.println("Type drone port...");
-        this.port = scanner.nextInt();
+
+        port = (int) Math.floor(Math.random()*40263)+8888;
+
         drone = new Drone(this.id, this.port, host);
 
         try{
-            DroneRESTClient.getInstance().initialize(host, serverPort , drone);
+            DroneRESTClient.getInstance().initialize(this.host, this.serverPort , drone);
 
             list = DroneRESTClient.getInstance().addRequest();
+
+            for (Drone d : list)
+                if (d.getId() == id)
+                    drone.setPosition(d.getPosition_x(),d.getPosition_y());
 
             DroneController.getInstance().initialize(list , drone);
 
             startThreads();
 
-            DroneController.getInstance().test();
-            //DroneController.getInstance().droneLifecycle();
+            //DroneController.getInstance().test();
+            DroneController.getInstance().droneLifecycle();
 
             //mi accorgo che drone è uscito quando:
             // - master gli assegna una consegna e non risponde (devo aggiornare succ e lista di tutti e assegnare la  consegna a un altro)

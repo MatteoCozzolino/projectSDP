@@ -1,6 +1,7 @@
 package Drones;
 
 import Model.Drone;
+import Model.GlobalStat;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.sun.jersey.api.client.Client;
@@ -40,7 +41,7 @@ public class DroneRESTClient {
             String droneToJson = gson.toJson(drone);
 
             client = Client.create();
-            WebResource webResource = client.resource("http://" + serverHost + ":" + serverPort + "/drones/add");
+            WebResource webResource = client.resource("http://" + serverHost + ":" + serverPort + "/drones/add/drone");
             ClientResponse response = webResource.type("application/json").accept("application/json").post(ClientResponse.class, droneToJson);
 
             if (response.getStatus() == 400) {
@@ -73,13 +74,27 @@ public class DroneRESTClient {
             WebResource webResource = client.resource("http://" + serverHost + ":" + serverPort + "/drones/delete");
             ClientResponse response = webResource.type("application/json").accept("application/json").post(ClientResponse.class, droneToJson);
 
-            System.out.println(response.getEntity(String.class));       //temp
-
         } catch (Exception e) {
-            System.out.println("Unable to reach the server");       //se il drone non esiste già?
+            System.out.println("Unable to reach the server");
             System.exit(-1);
         }
     }
 
 
+    public void sendGlobalStats(GlobalStat globalStat) {
+
+        try {
+            Gson gson = new Gson();
+            String globalStatToJson = gson.toJson(globalStat);
+
+            client = Client.create();
+            WebResource webResource = client.resource("http://" + serverHost + ":" + serverPort + "/drones/add/globalStats");
+            ClientResponse response = webResource.type("application/json").accept("application/json").post(ClientResponse.class, globalStatToJson);
+
+        }catch (Exception e){
+            System.out.println("Unable to reach the server");
+            System.exit(-1);
+        }
+
+    }
 }

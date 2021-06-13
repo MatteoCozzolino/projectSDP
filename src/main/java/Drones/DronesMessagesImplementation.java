@@ -1,6 +1,5 @@
 package Drones;
 
-
 import Dronazon.DeliveriesGenerator;
 import Model.Coordinates;
 import Model.Drone;
@@ -101,6 +100,10 @@ public class DronesMessagesImplementation extends DronesMessagesGrpc.DronesMessa
 
             Drone to = new Drone(DroneController.getInstance().getSuccDrone().getId(), DroneController.getInstance().getSuccDrone().getPort(), DroneController.getInstance().getSuccDrone().getHost());
             Drone tokenDrone = new Drone(request.getId(), request.getPort(), request.getHost());
+
+            if (to.getId() == tokenDrone.getId())
+                DroneController.getInstance().getSuccDrone().setMaster(true);
+
             DroneController.getInstance().elected(tokenDrone,to);
         }
 
@@ -115,7 +118,7 @@ public class DronesMessagesImplementation extends DronesMessagesGrpc.DronesMessa
     public void assignDelivery(DronesMessagesOuterClass.DeliveryInfo request, StreamObserver<DronesMessagesOuterClass.Empty> response){
 
         DroneController.getInstance().setDelivery(new DeliveriesGenerator(request.getDeliveryID(), new Coordinates(request.getPickUpX(), request.getPickUpY()), new Coordinates(request.getDeliveryX(), request.getDeliveryY())));
-
+//System.out.println("done "+DroneController.getInstance().currentDelivery.getDeliveryID());
         response.onNext(DronesMessagesOuterClass.Empty.newBuilder().build());
         response.onCompleted();
     }
@@ -139,13 +142,33 @@ public class DronesMessagesImplementation extends DronesMessagesGrpc.DronesMessa
             tempDrone.setPosition(request.getCoordinateX(), request.getCoordinateY());
             tempDrone.setBatteryLevel(request.getBattery());
 
-            MasterDroneController.getInstance().addDroneToList(tempDrone);
-
+            DroneController.getInstance().getDronesList().set(DroneController.getInstance().getDronesList().indexOf(DroneController.getInstance().getByID(request.getId())),tempDrone);
         }
 
         response.onNext(DronesMessagesOuterClass.Empty.newBuilder().build());
         response.onCompleted();
     }
 
+    @Override
+    public void alive (DronesMessagesOuterClass.Empty request, StreamObserver<DronesMessagesOuterClass.Empty> response){
+
+        response.onNext(DronesMessagesOuterClass.Empty.newBuilder().build());
+        response.onCompleted();
+    }
+
+    @Override
+    public void remove (DronesMessagesOuterClass.DroneData request, StreamObserver<DronesMessagesOuterClass.Empty> response){
+
+        Drone toRemove = new Drone();
+
+        for (Drone d : DroneController.getInstance().getDronesList())
+            if (d.getId() == request.getId())
+                toRemove = d;
+
+        DroneController.getInstance().updateList(toRemove);
+
+        response.onNext(DronesMessagesOuterClass.Empty.newBuilder().build());
+        response.onCompleted();
+    }
 
 }

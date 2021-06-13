@@ -41,4 +41,10 @@ public class DeliveriesGenerator {
     public Coordinates getDeliveryPoint() {
         return deliveryPoint;
     }
+
+    public int getDeliveryID() {
+        return deliveryID;
+    }
+
+    public void setDeliveryID(int id){deliveryID = id;}
 }

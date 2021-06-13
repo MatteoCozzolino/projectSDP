@@ -14,7 +14,7 @@ public class Dronazon {
         String clientId = MqttClient.generateClientId();
         DeliveriesGenerator delivery = new DeliveriesGenerator();
         Gson gson;
-        int deliveryID = 0;
+        int deliveryID = 1;
         String topic = "dronazon/smartcity/orders/";
         int qos = 2;
 
@@ -30,7 +30,6 @@ public class Dronazon {
             while(true){
 
                 delivery.generateDelivery(deliveryID);
-                deliveryID ++;
 
                 gson = new Gson();
                 String deliveryToJson = gson.toJson(delivery);
@@ -39,6 +38,7 @@ public class Dronazon {
                 message.setQos(qos);
                 System.out.println("Sending delivery information with id: " + deliveryID + " ...");
                 client.publish(topic, message);
+                deliveryID ++;
 
                 Thread.sleep(5000); //5 seconds waiting time before generating another delivery
 

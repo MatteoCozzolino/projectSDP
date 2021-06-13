@@ -2,13 +2,13 @@ package Drones;
 
 import Dronazon.DeliveriesGenerator;
 import Drones.Threads.PeerListenerThread;
+import Drones.Threads.PingThread;
 import Model.Drone;
 import Model.DroneStats;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import proto.DronesMessagesGrpc;
 import proto.DronesMessagesOuterClass;
-
 
 
 import java.sql.Timestamp;
@@ -19,15 +19,17 @@ public class DroneController {
 
     private ArrayList<Drone> dronesList;
     private static DroneController droneController;
-    private PeerListenerThread listenerThread;
+    PeerListenerThread listenerThread;
     private Drone drone;
     private Drone succDrone;
     private DroneStats droneStats;
-    public int masterID;            //posso  metterle  private?
+    public int masterID;
     public int masterPort;
     public String masterHost = "";
     public boolean electionInProgress = false;
-    private DeliveriesGenerator delivery = null;
+    public DeliveriesGenerator currentDelivery = new DeliveriesGenerator();
+    private int totalNumberDeliveries;
+    public boolean notDeliverying = true;
 
     public void initialize (ArrayList<Drone> dronesList, Drone drone){
 
@@ -49,7 +51,7 @@ public class DroneController {
 
     }
 
-    public synchronized void test(){
+    public synchronized void test(){        //temp
 
         while(true) {
             try {
@@ -57,22 +59,34 @@ public class DroneController {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            sendStats(0,0);        //temp
+            sendStats(0,0);
 
         }}
 
     public void droneLifecycle () {
 
-        while (getCurrDrone().getBatteryLevel() > 15){
-            if (delivery != null){
+        PingThread pingThread = new PingThread();
+        pingThread.start(); //da rivedere quando far partire
+
+        while (drone.getBatteryLevel() > 15){
+
+            /*try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }*/
+//System.out.println( "  id    aaaa");        //il !=0 da problemi
+            if (currentDelivery.getDeliveryID() != 0 && notDeliverying){
+                notDeliverying = false;
                 System.out.println(" INIZIO   battery :"+drone.getBatteryLevel()+" posiz partenza "+drone.getPosition_x() + " "+drone.getPosition_y());
+
                 //calcolo km percorsi
-                float d1 = (float) Math.sqrt(Math.pow((delivery.getPickUpPoint().getX() - drone.getPosition_x()),2) + Math.pow((delivery.getPickUpPoint().getY() - drone.getPosition_y()),2));
-                float d2 = (float) Math.sqrt(Math.pow((delivery.getPickUpPoint().getX() - delivery.getDeliveryPoint().getX()),2) + Math.pow((delivery.getPickUpPoint().getY() - delivery.getDeliveryPoint().getY()),2));
+                float d1 = (float) Math.sqrt(Math.pow((currentDelivery.getPickUpPoint().getX() - drone.getPosition_x()),2) + Math.pow((currentDelivery.getPickUpPoint().getY() - drone.getPosition_y()),2));
+                float d2 = (float) Math.sqrt(Math.pow((currentDelivery.getPickUpPoint().getX() - currentDelivery.getDeliveryPoint().getX()),2) + Math.pow((currentDelivery.getPickUpPoint().getY() - currentDelivery.getDeliveryPoint().getY()),2));
                 float km = d1+d2;
 
                 //setto la nuova posizione del drone
-                drone.setPosition(delivery.getDeliveryPoint().getX(), delivery.getDeliveryPoint().getY());
+                drone.setPosition(currentDelivery.getDeliveryPoint().getX(), currentDelivery.getDeliveryPoint().getY());
 
                 //diminuisco la batteria
                 drone.changeBatteryLevel();
@@ -90,27 +104,38 @@ public class DroneController {
                 //timestamp di arrivo al luogo di consegna
                 //String ts = new Timestamp(System.currentTimeMillis()).toString();
 
-                System.out.println(" FINE   battery :"+drone.getBatteryLevel()+" nuova posiz "+drone.getPosition_x() + " "+drone.getPosition_y());
+                totalNumberDeliveries ++;
+                System.out.println(" FINE   battery :"+drone.getBatteryLevel()+" nuova posiz "+drone.getPosition_x() + " "+drone.getPosition_y() + "     "+totalNumberDeliveries);
 
                 //invio le statistiche al drone master
                 sendStats(Float.parseFloat("22"),km); //fix ts
+                currentDelivery.setDeliveryID(0);
+                notDeliverying = true;
+
             }
 
-            delivery = null;
-        }
 
+        }
+/*
         if (drone.getBatteryLevel() < 15){
 
-            System.exit(0);
-            //da fare, forse in un thread?
+            //il drone esce dalla rete (da aspettare  se sta consegnando, ancora da fare)
 
-        }
+            if (drone.isMaster())
+                MasterDroneController.getInstance().disconnectOperations();
+
+            listenerThread.shutdown();
+
+            DroneRESTClient.getInstance().leaveRequest(drone);
+
+            System.out.println("Il drone esce dalla rete.");
+            System.exit(0);
+
+        }*/
 
 
 
     }
-
-
 
     public static DroneController getInstance(){
         if(droneController == null)
@@ -178,83 +203,58 @@ public class DroneController {
         }
 
         if (drone.getId() != succDrone.getId())
-            greeting();
+            for (Drone targetDrone : dronesList) {          //controllare la concorrenza
+                Thread greetThread = new Thread(() -> greeting(targetDrone));
+                greetThread.start();
+                /*try {
+                    greetThread.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }*/
+            }
 
     }
 
-    private void greeting() {
+    private void greeting(Drone targetDrone) {
 
-        ManagedChannel channel;
-        DronesMessagesGrpc.DronesMessagesBlockingStub stub;
+        ManagedChannel channel = ManagedChannelBuilder.forTarget(targetDrone.getHost()+":"+targetDrone.getPort()).usePlaintext().build();
+        DronesMessagesGrpc.DronesMessagesBlockingStub stub = DronesMessagesGrpc.newBlockingStub(channel);
+        DronesMessagesOuterClass.DroneData request = DronesMessagesOuterClass.DroneData.newBuilder().setId(drone.getId()).setPort(drone.getPort()).setHost(drone.getHost()).build();
 
-        for(Drone targetDrone : dronesList) {
-            try{
-                channel = ManagedChannelBuilder.forTarget(targetDrone.getHost()+":"+targetDrone.getPort()).usePlaintext().build();
-                stub = DronesMessagesGrpc.newBlockingStub(channel);
-                DronesMessagesOuterClass.DroneData request = DronesMessagesOuterClass.DroneData.newBuilder().setId(drone.getId()).setPort(drone.getPort()).setHost(drone.getHost()).build();
+        DronesMessagesOuterClass.DroneData reply = stub.greet(request);
 
-                DronesMessagesOuterClass.DroneData reply = stub.greet(request);
+        if (reply.getId() != 0)
+            setMasterInfos(reply.getId(), reply.getPort(), reply.getHost());
 
-                //solo il drone master invierà le sue informazioni
-                if (reply.getId() != 0)
-                    setMasterInfos(reply.getId(), reply.getPort(), reply.getHost());
+        if (succDrone.getId() == masterID)
+            succDrone.setMaster(true);
 
-                System.out.println(masterID + "----" + masterPort + "----" + masterHost);   //temp
+        System.out.println(masterID + "----" + masterPort + "----" + masterHost);   //temp
 
-                channel.shutdownNow();
-
-            } catch (Throwable t) {
-
-                System.out.println("Drone with ID: "+targetDrone.getId() +" disconnected, updating peers...");
-                updateList(targetDrone);
-                removeDrone(targetDrone);
-
-            }
-        }
-
-        //il drone che è entrato nella rete invierà le sue informazioni su batteria e posizione al master
         if (masterID != 0 && masterID != getCurrDrone().getId()){
-            channel = ManagedChannelBuilder.forTarget(masterHost+":"+masterPort).usePlaintext().build();
-            stub = DronesMessagesGrpc.newBlockingStub(channel);
             DronesMessagesOuterClass.DroneInfo info = DronesMessagesOuterClass.DroneInfo.newBuilder().setId(getCurrDrone().getId()).setPort(getCurrDrone().getPort()).setHost(getCurrDrone().getHost()).setCoordinateX(getCurrDrone().getPosition_x()).setCoordinateY(getCurrDrone().getPosition_y()).setBattery(getCurrDrone().getBatteryLevel()).build();
 
-            DronesMessagesOuterClass.Empty reply = stub.sendDroneInfoToMaster(info);
-
-            channel.shutdownNow();
-
+            DronesMessagesOuterClass.Empty emptyReply = stub.sendDroneInfoToMaster(info);
         }
-    }
 
-    public void removeDrone(Drone targetDrone) {
-
-
-
-
+        channel.shutdownNow();
 
     }
 
     private void sendStats(float timestamp, float km){
 
-        try {
-            ManagedChannel channel = ManagedChannelBuilder.forTarget(masterHost + ":" + masterPort).usePlaintext().build();
-            DronesMessagesGrpc.DronesMessagesBlockingStub stub = DronesMessagesGrpc.newBlockingStub(channel);
-            DronesMessagesOuterClass.DroneStats stats = DronesMessagesOuterClass.DroneStats.newBuilder().setTimestamp(timestamp).setCoordinateX(drone.getPosition_x()).setCoordinateY(drone.getPosition_y()).setKm(km).setAvgPM10(12).setBattery(drone.getBatteryLevel()).build();
-            //sistemare set pm10
+        ManagedChannel channel = ManagedChannelBuilder.forTarget(masterHost + ":" + masterPort).usePlaintext().build();
+        DronesMessagesGrpc.DronesMessagesBlockingStub stub = DronesMessagesGrpc.newBlockingStub(channel);
+        DronesMessagesOuterClass.DroneStats stats = DronesMessagesOuterClass.DroneStats.newBuilder().setTimestamp(timestamp).setCoordinateX(drone.getPosition_x()).setCoordinateY(drone.getPosition_y()).setKm(km).setAvgPM10(12).setBattery(drone.getBatteryLevel()).build();
+        //sistemare set pm10
 
-            DronesMessagesOuterClass.Empty reply = stub.sendStats(stats);
+        DronesMessagesOuterClass.Empty reply = stub.sendStats(stats);
 
-            channel.shutdownNow();
-        }catch (Throwable t){
-
-            System.out.println("The drone master is offline!");
-            updateList(getByID(masterID));
-            if (!electionInProgress){
-                electionInProgress = true;
-                election(drone, succDrone);   }
-        }
+        channel.shutdownNow();
 
     }
 
+    //controllare bene quando consegne sono finiti
     public void election( Drone tokenDrone, Drone to){
 
         System.out.println("Election of the new master started!");
@@ -291,11 +291,10 @@ public class DroneController {
     public Drone getByID(int id){
 
         ArrayList<Drone> tempList = getDronesList();
-        for (Drone d : tempList)
+        for (Drone d : tempList){
             if (d.getId() == id)
-                return d;
+                return d;}
         return null;
-
     }
 
     public void setMasterInfos(int id, int port, String host){
@@ -320,5 +319,5 @@ public class DroneController {
         //}
     }
 
-    public void setDelivery (DeliveriesGenerator delivery){this.delivery = delivery;}
+    public void setDelivery (DeliveriesGenerator delivery){this.currentDelivery = delivery;}
 }

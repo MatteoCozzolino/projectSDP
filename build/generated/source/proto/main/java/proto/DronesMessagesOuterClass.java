@@ -4419,7 +4419,7 @@ public final class DronesMessagesOuterClass {
       "n\n\014DeliveryInfo\022\022\n\ndeliveryID\030\001 \002(\005\022\020\n\010p" +
       "ickUp_x\030\002 \002(\005\022\020\n\010pickUp_y\030\003 \002(\005\022\022\n\ndeliv" +
       "ery_x\030\004 \002(\005\022\022\n\ndelivery_y\030\005 \002(\005\"\007\n\005Empty" +
-      "2\350\002\n\016DronesMessages\022+\n\005greet\022\020.proto.Dro" +
+      "2\267\003\n\016DronesMessages\022+\n\005greet\022\020.proto.Dro" +
       "neData\032\020.proto.DroneData\022,\n\tsendStats\022\021." +
       "proto.DroneStats\032\014.proto.Empty\022*\n\010electi" +
       "on\022\020.proto.DroneData\032\014.proto.Empty\022)\n\007el" +
@@ -4428,7 +4428,9 @@ public final class DronesMessagesOuterClass {
       "roto.Empty\0226\n\024getDroneInformations\022\014.pro" +
       "to.Empty\032\020.proto.DroneInfo\0227\n\025sendDroneI" +
       "nfoToMaster\022\020.proto.DroneInfo\032\014.proto.Em" +
-      "pty"
+      "pty\022#\n\005alive\022\014.proto.Empty\032\014.proto.Empty" +
+      "\022(\n\006remove\022\020.proto.DroneData\032\014.proto.Emp" +
+      "ty"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,

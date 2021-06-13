@@ -7,7 +7,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
-import java.util.HashMap;
+import java.util.ArrayList;
 
 @Path("amministratore")
 public class GlobalStatsServices {
@@ -26,7 +26,7 @@ public class GlobalStatsServices {
     @Produces({"application/json", "application/xml"})
     public Response getLastStats (@PathParam("numberOfValues") int n) {
 
-        HashMap<Float, GlobalStat> stats = GlobalStats.getGlobalStatsInstance().getGlobalStatsList(n);
+        ArrayList<GlobalStat> stats = GlobalStats.getGlobalStatsInstance().getGlobalStatsList(n);
 
         if (stats != null )
             return Response.ok(stats).build();

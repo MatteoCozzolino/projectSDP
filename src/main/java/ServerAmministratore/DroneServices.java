@@ -1,6 +1,7 @@
 package ServerAmministratore;
 
 import Model.Drone;
+import Model.GlobalStat;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
@@ -8,7 +9,7 @@ import javax.ws.rs.core.Response;
 @Path("drones")
 public class DroneServices {
 
-    @Path("add")
+    @Path("add/drone")
     @POST
     @Consumes({"application/json", "application/xml"})
     public Response addDrone(Drone d){
@@ -39,6 +40,18 @@ public class DroneServices {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
+
+    }
+
+    @Path("add/globalStats")
+    @POST
+    @Consumes({"application/json", "application/xml"})
+    public Response addGlobalStats(GlobalStat globalStat){
+
+        if (GlobalStats.getGlobalStatsInstance().addGlobalStatValue(globalStat))
+            return Response.ok().build();
+        else
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
 
     }
 

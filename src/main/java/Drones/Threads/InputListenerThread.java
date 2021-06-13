@@ -2,10 +2,8 @@ package Drones.Threads;
 
 import Drones.DroneController;
 import Drones.DroneRESTClient;
-import Drones.MasterDroneController;
 import Model.Drone;
 
-import java.util.ArrayList;
 import java.util.Scanner;
 
 public class InputListenerThread extends Thread{
@@ -18,18 +16,12 @@ public class InputListenerThread extends Thread{
 
         while(true) {               //temp
             System.out.println("succ is: "+ DroneController.getInstance().getSuccDrone().getId() + " sono il master: "+DroneController.getInstance().getCurrDrone().isMaster());
-            System.out.println("\nmasterid: "+DroneController.getInstance().masterID);
+            System.out.println("\nmasterid: "+DroneController.getInstance().masterID + " size lista droni  "+DroneController.getInstance().getDronesList().size());
 
-
-            if (DroneController.getInstance().getCurrDrone().isMaster()){
-
-                ArrayList<Drone> a;
-                a = MasterDroneController.getInstance().getDronesList();
-                for (Drone d : a){
-                    System.out.println("\n drone con id: "+d.getId() + "---- posiz " + d.getPosition_x() + "---" + d.getPosition_y());
-                }
-
+            for (Drone d : DroneController.getInstance().getDronesList()){
+                System.out.println("\n list drone con id: "+d.getId() + "---- posiz " + d.getPosition_x() + "---" + d.getPosition_y() +" batt " + d.getBatteryLevel());
             }
+
             if (scanner.nextLine().equals("quit"))
                 break;
         }

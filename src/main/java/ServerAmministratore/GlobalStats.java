@@ -15,10 +15,10 @@ public class GlobalStats {
     private static GlobalStats globalStatsInstance;
 
     @XmlElement(name="globalStats")
-    private Map<Float , GlobalStat> globalStatsList;
+    private ArrayList <GlobalStat> globalStatsList;
 
     private GlobalStats(){
-        globalStatsList = new HashMap<Float,GlobalStat>() {};
+        globalStatsList = new ArrayList<GlobalStat>() {};
     }
 
     public static GlobalStats getGlobalStatsInstance(){
@@ -27,32 +27,27 @@ public class GlobalStats {
         return globalStatsInstance;
     }
 
-    public HashMap<Float,GlobalStat> getGlobalStatsList(int n){
+    public boolean addGlobalStatValue (GlobalStat stats){
+
+        globalStatsList.add(stats);
+        return true;
+
+    }
+
+    public ArrayList<GlobalStat> getGlobalStatsList(int n){
 
         //creates a temporary list to avoid modification from other parties
-        HashMap<Float,GlobalStat> tempStatList = new HashMap<>();
-        tempStatList.putAll(globalStatsList);
+        ArrayList<GlobalStat> tempStatList = new ArrayList<>();
+        tempStatList.addAll(globalStatsList);
 
-        ArrayList <Float> timeStamps = new ArrayList<>();
-        ArrayList <GlobalStat> stats = new ArrayList<>();
+        Collections.sort(tempStatList,Collections.reverseOrder());
 
-        for (Map.Entry<Float,GlobalStat> element : tempStatList.entrySet()){
-
-            timeStamps.add(element.getKey());
-            stats.add(element.getValue());
-
+        ArrayList<GlobalStat> requiredList = new ArrayList<>();
+        for (int i = 0; i < n && i < tempStatList.size() ; i++){
+            requiredList.add(tempStatList.get(i));
         }
 
-        Collections.sort(timeStamps,Collections.reverseOrder());
-        Collections.sort(stats,Collections.reverseOrder());
-
-        tempStatList.clear();
-
-        for (int i = 0; i < n && i < timeStamps.size() ; i++){
-            tempStatList.put(timeStamps.get(i), stats.get(i));
-        }
-
-        return tempStatList;
+        return requiredList;
     }
 
     public int getDelivMed(int t1, int t2) {
@@ -60,7 +55,9 @@ public class GlobalStats {
         int sum = 0;
         int counter = 0;
         HashMap<Float,GlobalStat> tempStatList = new HashMap<>();
-        tempStatList.putAll(globalStatsList);
+
+        for (GlobalStat globalStat : globalStatsList)
+            tempStatList.put(globalStat.getTimestamp(), globalStat);
 
         for (Map.Entry<Float,GlobalStat> element : tempStatList.entrySet()){
 
@@ -78,7 +75,9 @@ public class GlobalStats {
         int sum = 0;
         int counter = 0;
         HashMap<Float,GlobalStat> tempStatList = new HashMap<>();
-        tempStatList.putAll(globalStatsList);
+
+        for (GlobalStat globalStat : globalStatsList)
+            tempStatList.put(globalStat.getTimestamp(), globalStat);
 
         for (Map.Entry<Float,GlobalStat> element : tempStatList.entrySet()){
 
