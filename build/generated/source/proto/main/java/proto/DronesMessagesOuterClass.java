@@ -80,19 +80,11 @@ public final class DronesMessagesOuterClass {
     int getCoordinateY();
 
     /**
-     * <pre>
-     *non necessario in fase di presentazione
-     * </pre>
-     *
      * <code>required int32 battery = 6;</code>
      * @return Whether the battery field is set.
      */
     boolean hasBattery();
     /**
-     * <pre>
-     *non necessario in fase di presentazione
-     * </pre>
-     *
      * <code>required int32 battery = 6;</code>
      * @return The battery.
      */
@@ -325,10 +317,6 @@ public final class DronesMessagesOuterClass {
     public static final int BATTERY_FIELD_NUMBER = 6;
     private int battery_;
     /**
-     * <pre>
-     *non necessario in fase di presentazione
-     * </pre>
-     *
      * <code>required int32 battery = 6;</code>
      * @return Whether the battery field is set.
      */
@@ -336,10 +324,6 @@ public final class DronesMessagesOuterClass {
       return ((bitField0_ & 0x00000020) != 0);
     }
     /**
-     * <pre>
-     *non necessario in fase di presentazione
-     * </pre>
-     *
      * <code>required int32 battery = 6;</code>
      * @return The battery.
      */
@@ -1063,10 +1047,6 @@ public final class DronesMessagesOuterClass {
 
       private int battery_ ;
       /**
-       * <pre>
-       *non necessario in fase di presentazione
-       * </pre>
-       *
        * <code>required int32 battery = 6;</code>
        * @return Whether the battery field is set.
        */
@@ -1074,10 +1054,6 @@ public final class DronesMessagesOuterClass {
         return ((bitField0_ & 0x00000020) != 0);
       }
       /**
-       * <pre>
-       *non necessario in fase di presentazione
-       * </pre>
-       *
        * <code>required int32 battery = 6;</code>
        * @return The battery.
        */
@@ -1085,10 +1061,6 @@ public final class DronesMessagesOuterClass {
         return battery_;
       }
       /**
-       * <pre>
-       *non necessario in fase di presentazione
-       * </pre>
-       *
        * <code>required int32 battery = 6;</code>
        * @param value The battery to set.
        * @return This builder for chaining.
@@ -1100,10 +1072,6 @@ public final class DronesMessagesOuterClass {
         return this;
       }
       /**
-       * <pre>
-       *non necessario in fase di presentazione
-       * </pre>
-       *
        * <code>required int32 battery = 6;</code>
        * @return This builder for chaining.
        */
@@ -1215,15 +1183,15 @@ public final class DronesMessagesOuterClass {
     float getKm();
 
     /**
-     * <code>required float avgPM10 = 5;</code>
+     * <code>required double avgPM10 = 5;</code>
      * @return Whether the avgPM10 field is set.
      */
     boolean hasAvgPM10();
     /**
-     * <code>required float avgPM10 = 5;</code>
+     * <code>required double avgPM10 = 5;</code>
      * @return The avgPM10.
      */
-    float getAvgPM10();
+    double getAvgPM10();
 
     /**
      * <code>required int32 battery = 6;</code>
@@ -1235,6 +1203,17 @@ public final class DronesMessagesOuterClass {
      * @return The battery.
      */
     int getBattery();
+
+    /**
+     * <code>required int32 droneID = 7;</code>
+     * @return Whether the droneID field is set.
+     */
+    boolean hasDroneID();
+    /**
+     * <code>required int32 droneID = 7;</code>
+     * @return The droneID.
+     */
+    int getDroneID();
   }
   /**
    * Protobuf type {@code proto.DroneStats}
@@ -1302,14 +1281,19 @@ public final class DronesMessagesOuterClass {
               km_ = input.readFloat();
               break;
             }
-            case 45: {
+            case 41: {
               bitField0_ |= 0x00000010;
-              avgPM10_ = input.readFloat();
+              avgPM10_ = input.readDouble();
               break;
             }
             case 48: {
               bitField0_ |= 0x00000020;
               battery_ = input.readInt32();
+              break;
+            }
+            case 56: {
+              bitField0_ |= 0x00000040;
+              droneID_ = input.readInt32();
               break;
             }
             default: {
@@ -1414,19 +1398,19 @@ public final class DronesMessagesOuterClass {
     }
 
     public static final int AVGPM10_FIELD_NUMBER = 5;
-    private float avgPM10_;
+    private double avgPM10_;
     /**
-     * <code>required float avgPM10 = 5;</code>
+     * <code>required double avgPM10 = 5;</code>
      * @return Whether the avgPM10 field is set.
      */
     public boolean hasAvgPM10() {
       return ((bitField0_ & 0x00000010) != 0);
     }
     /**
-     * <code>required float avgPM10 = 5;</code>
+     * <code>required double avgPM10 = 5;</code>
      * @return The avgPM10.
      */
-    public float getAvgPM10() {
+    public double getAvgPM10() {
       return avgPM10_;
     }
 
@@ -1445,6 +1429,23 @@ public final class DronesMessagesOuterClass {
      */
     public int getBattery() {
       return battery_;
+    }
+
+    public static final int DRONEID_FIELD_NUMBER = 7;
+    private int droneID_;
+    /**
+     * <code>required int32 droneID = 7;</code>
+     * @return Whether the droneID field is set.
+     */
+    public boolean hasDroneID() {
+      return ((bitField0_ & 0x00000040) != 0);
+    }
+    /**
+     * <code>required int32 droneID = 7;</code>
+     * @return The droneID.
+     */
+    public int getDroneID() {
+      return droneID_;
     }
 
     private byte memoizedIsInitialized = -1;
@@ -1478,6 +1479,10 @@ public final class DronesMessagesOuterClass {
         memoizedIsInitialized = 0;
         return false;
       }
+      if (!hasDroneID()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -1498,10 +1503,13 @@ public final class DronesMessagesOuterClass {
         output.writeFloat(4, km_);
       }
       if (((bitField0_ & 0x00000010) != 0)) {
-        output.writeFloat(5, avgPM10_);
+        output.writeDouble(5, avgPM10_);
       }
       if (((bitField0_ & 0x00000020) != 0)) {
         output.writeInt32(6, battery_);
+      }
+      if (((bitField0_ & 0x00000040) != 0)) {
+        output.writeInt32(7, droneID_);
       }
       unknownFields.writeTo(output);
     }
@@ -1530,11 +1538,15 @@ public final class DronesMessagesOuterClass {
       }
       if (((bitField0_ & 0x00000010) != 0)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeFloatSize(5, avgPM10_);
+          .computeDoubleSize(5, avgPM10_);
       }
       if (((bitField0_ & 0x00000020) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(6, battery_);
+      }
+      if (((bitField0_ & 0x00000040) != 0)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(7, droneID_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -1575,14 +1587,19 @@ public final class DronesMessagesOuterClass {
       }
       if (hasAvgPM10() != other.hasAvgPM10()) return false;
       if (hasAvgPM10()) {
-        if (java.lang.Float.floatToIntBits(getAvgPM10())
-            != java.lang.Float.floatToIntBits(
+        if (java.lang.Double.doubleToLongBits(getAvgPM10())
+            != java.lang.Double.doubleToLongBits(
                 other.getAvgPM10())) return false;
       }
       if (hasBattery() != other.hasBattery()) return false;
       if (hasBattery()) {
         if (getBattery()
             != other.getBattery()) return false;
+      }
+      if (hasDroneID() != other.hasDroneID()) return false;
+      if (hasDroneID()) {
+        if (getDroneID()
+            != other.getDroneID()) return false;
       }
       if (!unknownFields.equals(other.unknownFields)) return false;
       return true;
@@ -1615,12 +1632,16 @@ public final class DronesMessagesOuterClass {
       }
       if (hasAvgPM10()) {
         hash = (37 * hash) + AVGPM10_FIELD_NUMBER;
-        hash = (53 * hash) + java.lang.Float.floatToIntBits(
-            getAvgPM10());
+        hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+            java.lang.Double.doubleToLongBits(getAvgPM10()));
       }
       if (hasBattery()) {
         hash = (37 * hash) + BATTERY_FIELD_NUMBER;
         hash = (53 * hash) + getBattery();
+      }
+      if (hasDroneID()) {
+        hash = (37 * hash) + DRONEID_FIELD_NUMBER;
+        hash = (53 * hash) + getDroneID();
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
@@ -1763,10 +1784,12 @@ public final class DronesMessagesOuterClass {
         bitField0_ = (bitField0_ & ~0x00000004);
         km_ = 0F;
         bitField0_ = (bitField0_ & ~0x00000008);
-        avgPM10_ = 0F;
+        avgPM10_ = 0D;
         bitField0_ = (bitField0_ & ~0x00000010);
         battery_ = 0;
         bitField0_ = (bitField0_ & ~0x00000020);
+        droneID_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000040);
         return this;
       }
 
@@ -1818,6 +1841,10 @@ public final class DronesMessagesOuterClass {
         if (((from_bitField0_ & 0x00000020) != 0)) {
           result.battery_ = battery_;
           to_bitField0_ |= 0x00000020;
+        }
+        if (((from_bitField0_ & 0x00000040) != 0)) {
+          result.droneID_ = droneID_;
+          to_bitField0_ |= 0x00000040;
         }
         result.bitField0_ = to_bitField0_;
         onBuilt();
@@ -1886,6 +1913,9 @@ public final class DronesMessagesOuterClass {
         if (other.hasBattery()) {
           setBattery(other.getBattery());
         }
+        if (other.hasDroneID()) {
+          setDroneID(other.getDroneID());
+        }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
@@ -1909,6 +1939,9 @@ public final class DronesMessagesOuterClass {
           return false;
         }
         if (!hasBattery()) {
+          return false;
+        }
+        if (!hasDroneID()) {
           return false;
         }
         return true;
@@ -2082,39 +2115,39 @@ public final class DronesMessagesOuterClass {
         return this;
       }
 
-      private float avgPM10_ ;
+      private double avgPM10_ ;
       /**
-       * <code>required float avgPM10 = 5;</code>
+       * <code>required double avgPM10 = 5;</code>
        * @return Whether the avgPM10 field is set.
        */
       public boolean hasAvgPM10() {
         return ((bitField0_ & 0x00000010) != 0);
       }
       /**
-       * <code>required float avgPM10 = 5;</code>
+       * <code>required double avgPM10 = 5;</code>
        * @return The avgPM10.
        */
-      public float getAvgPM10() {
+      public double getAvgPM10() {
         return avgPM10_;
       }
       /**
-       * <code>required float avgPM10 = 5;</code>
+       * <code>required double avgPM10 = 5;</code>
        * @param value The avgPM10 to set.
        * @return This builder for chaining.
        */
-      public Builder setAvgPM10(float value) {
+      public Builder setAvgPM10(double value) {
         bitField0_ |= 0x00000010;
         avgPM10_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>required float avgPM10 = 5;</code>
+       * <code>required double avgPM10 = 5;</code>
        * @return This builder for chaining.
        */
       public Builder clearAvgPM10() {
         bitField0_ = (bitField0_ & ~0x00000010);
-        avgPM10_ = 0F;
+        avgPM10_ = 0D;
         onChanged();
         return this;
       }
@@ -2152,6 +2185,43 @@ public final class DronesMessagesOuterClass {
       public Builder clearBattery() {
         bitField0_ = (bitField0_ & ~0x00000020);
         battery_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private int droneID_ ;
+      /**
+       * <code>required int32 droneID = 7;</code>
+       * @return Whether the droneID field is set.
+       */
+      public boolean hasDroneID() {
+        return ((bitField0_ & 0x00000040) != 0);
+      }
+      /**
+       * <code>required int32 droneID = 7;</code>
+       * @return The droneID.
+       */
+      public int getDroneID() {
+        return droneID_;
+      }
+      /**
+       * <code>required int32 droneID = 7;</code>
+       * @param value The droneID to set.
+       * @return This builder for chaining.
+       */
+      public Builder setDroneID(int value) {
+        bitField0_ |= 0x00000040;
+        droneID_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required int32 droneID = 7;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearDroneID() {
+        bitField0_ = (bitField0_ & ~0x00000040);
+        droneID_ = 0;
         onChanged();
         return this;
       }
@@ -4411,26 +4481,25 @@ public final class DronesMessagesOuterClass {
       "\n\024DronesMessages.proto\022\005proto\"p\n\tDroneIn" +
       "fo\022\n\n\002id\030\001 \002(\005\022\014\n\004port\030\002 \002(\005\022\014\n\004host\030\003 \002" +
       "(\t\022\024\n\014coordinate_x\030\004 \002(\005\022\024\n\014coordinate_y" +
-      "\030\005 \002(\005\022\017\n\007battery\030\006 \002(\005\"y\n\nDroneStats\022\021\n" +
-      "\ttimestamp\030\001 \002(\002\022\024\n\014coordinate_x\030\002 \002(\005\022\024" +
-      "\n\014coordinate_y\030\003 \002(\005\022\n\n\002km\030\004 \002(\002\022\017\n\007avgP" +
-      "M10\030\005 \002(\002\022\017\n\007battery\030\006 \002(\005\"3\n\tDroneData\022" +
-      "\n\n\002id\030\001 \002(\005\022\014\n\004port\030\002 \002(\005\022\014\n\004host\030\003 \002(\t\"" +
-      "n\n\014DeliveryInfo\022\022\n\ndeliveryID\030\001 \002(\005\022\020\n\010p" +
-      "ickUp_x\030\002 \002(\005\022\020\n\010pickUp_y\030\003 \002(\005\022\022\n\ndeliv" +
-      "ery_x\030\004 \002(\005\022\022\n\ndelivery_y\030\005 \002(\005\"\007\n\005Empty" +
-      "2\267\003\n\016DronesMessages\022+\n\005greet\022\020.proto.Dro" +
-      "neData\032\020.proto.DroneData\022,\n\tsendStats\022\021." +
-      "proto.DroneStats\032\014.proto.Empty\022*\n\010electi" +
-      "on\022\020.proto.DroneData\032\014.proto.Empty\022)\n\007el" +
-      "ected\022\020.proto.DroneData\032\014.proto.Empty\0223\n" +
-      "\016assignDelivery\022\023.proto.DeliveryInfo\032\014.p" +
-      "roto.Empty\0226\n\024getDroneInformations\022\014.pro" +
-      "to.Empty\032\020.proto.DroneInfo\0227\n\025sendDroneI" +
-      "nfoToMaster\022\020.proto.DroneInfo\032\014.proto.Em" +
-      "pty\022#\n\005alive\022\014.proto.Empty\032\014.proto.Empty" +
-      "\022(\n\006remove\022\020.proto.DroneData\032\014.proto.Emp" +
-      "ty"
+      "\030\005 \002(\005\022\017\n\007battery\030\006 \002(\005\"\212\001\n\nDroneStats\022\021" +
+      "\n\ttimestamp\030\001 \002(\002\022\024\n\014coordinate_x\030\002 \002(\005\022" +
+      "\024\n\014coordinate_y\030\003 \002(\005\022\n\n\002km\030\004 \002(\002\022\017\n\007avg" +
+      "PM10\030\005 \002(\001\022\017\n\007battery\030\006 \002(\005\022\017\n\007droneID\030\007" +
+      " \002(\005\"3\n\tDroneData\022\n\n\002id\030\001 \002(\005\022\014\n\004port\030\002 " +
+      "\002(\005\022\014\n\004host\030\003 \002(\t\"n\n\014DeliveryInfo\022\022\n\ndel" +
+      "iveryID\030\001 \002(\005\022\020\n\010pickUp_x\030\002 \002(\005\022\020\n\010pickU" +
+      "p_y\030\003 \002(\005\022\022\n\ndelivery_x\030\004 \002(\005\022\022\n\ndeliver" +
+      "y_y\030\005 \002(\005\"\007\n\005Empty2\377\002\n\016DronesMessages\022+\n" +
+      "\005greet\022\020.proto.DroneData\032\020.proto.DroneDa" +
+      "ta\022,\n\tsendStats\022\021.proto.DroneStats\032\014.pro" +
+      "to.Empty\022*\n\010election\022\020.proto.DroneData\032\014" +
+      ".proto.Empty\022)\n\007elected\022\020.proto.DroneDat" +
+      "a\032\014.proto.Empty\0223\n\016assignDelivery\022\023.prot" +
+      "o.DeliveryInfo\032\014.proto.Empty\0227\n\025sendDron" +
+      "eInfoToMaster\022\020.proto.DroneInfo\032\014.proto." +
+      "Empty\022#\n\005alive\022\014.proto.Empty\032\014.proto.Emp" +
+      "ty\022(\n\006remove\022\020.proto.DroneData\032\014.proto.E" +
+      "mpty"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -4447,7 +4516,7 @@ public final class DronesMessagesOuterClass {
     internal_static_proto_DroneStats_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_proto_DroneStats_descriptor,
-        new java.lang.String[] { "Timestamp", "CoordinateX", "CoordinateY", "Km", "AvgPM10", "Battery", });
+        new java.lang.String[] { "Timestamp", "CoordinateX", "CoordinateY", "Km", "AvgPM10", "Battery", "DroneID", });
     internal_static_proto_DroneData_descriptor =
       getDescriptor().getMessageTypes().get(2);
     internal_static_proto_DroneData_fieldAccessorTable = new

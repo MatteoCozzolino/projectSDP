@@ -8,7 +8,7 @@ message DroneInfo {
   required string host = 3;
   required int32 coordinate_x = 4;
   required int32 coordinate_y = 5;
-  required int32 battery = 6;       //non necessario in fase di presentazione
+  required int32 battery = 6;
 
 }
 
@@ -18,8 +18,9 @@ message DroneStats {
   required int32 coordinate_x = 2;
   required int32 coordinate_y = 3;
   required float km = 4;
-  required float avgPM10 = 5;
+  required double avgPM10 = 5;
   required int32 battery = 6;
+  required int32 droneID = 7;
 
 }
 
@@ -49,8 +50,7 @@ service DronesMessages {
   rpc election (DroneData) returns (Empty);   //Metodo per effettuare l'elezione nell'anello
   rpc elected (DroneData) returns (Empty); //Metodo per la notifica del nuovo drone master appena eletto
   rpc assignDelivery (DeliveryInfo) returns (Empty);  //Metodo usato dal drone master per assegnare la consegna
-  rpc getDroneInformations (Empty) returns (DroneInfo);   //Metodo usato dal drone master appena eletto per raccogliere le informazioni su posizione e batteria di tutti i droni della smart city
-  rpc sendDroneInfoToMaster (DroneInfo) returns (Empty);    //Metodo usato da un drone appena entrato nella rete per mandare le proprie informazioni al master
+  rpc sendDroneInfoToMaster (DroneInfo) returns (Empty);    //Metodo usato da un drone per mandare le proprie informazioni al master
   rpc alive (Empty) returns (Empty); //Metodo usato per controllare che il drone successivo nell'anello è alive
   rpc remove (DroneData) returns (Empty); //Metodo usato per notificare i peer quando è stato rilevato un drone offline
 }

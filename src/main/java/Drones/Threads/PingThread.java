@@ -52,8 +52,9 @@ public class PingThread extends Thread{
 
     private boolean pingSucc(Drone succDrone) {
 
+        ManagedChannel channel = null;
         try {
-            ManagedChannel channel = ManagedChannelBuilder.forTarget(succDrone.getHost() + ":" + succDrone.getPort()).usePlaintext().build();
+            channel = ManagedChannelBuilder.forTarget(succDrone.getHost() + ":" + succDrone.getPort()).usePlaintext().build();
             DronesMessagesGrpc.DronesMessagesBlockingStub stub = DronesMessagesGrpc.newBlockingStub(channel);
             DronesMessagesOuterClass.Empty pingMessage = DronesMessagesOuterClass.Empty.newBuilder().build();
 
@@ -63,6 +64,7 @@ public class PingThread extends Thread{
             return true;
 
         }catch (Throwable t){
+            channel.shutdownNow();
             return false;
         }
     }

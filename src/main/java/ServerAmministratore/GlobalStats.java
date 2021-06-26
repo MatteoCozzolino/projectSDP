@@ -30,8 +30,11 @@ public class GlobalStats {
     public boolean addGlobalStatValue (GlobalStat stats){
 
         globalStatsList.add(stats);
-        return true;
 
+        for (GlobalStat a :globalStatsList)         //temp
+            System.out.println(a.getAvgKm()+" <-global stats");
+
+        return true;
     }
 
     public ArrayList<GlobalStat> getGlobalStatsList(int n){

@@ -45,18 +45,9 @@ public class DroneStarter {
 
             startThreads();
 
-            //DroneController.getInstance().test();
-            DroneController.getInstance().droneLifecycle();
-
-            //mi accorgo che drone è uscito quando:
-            // - master gli assegna una consegna e non risponde (devo aggiornare succ e lista di tutti e assegnare la  consegna a un altro)
-            // - durante elezione il mio succ non esiste (aggiorno il mio succ e la lista di tutti)
-            // - quando un drone entra e fa greeting uno dei droni non risponde (aggiorno succ e lista di tutti)
-
         }
         catch (Exception e){
             e.printStackTrace();}
-
     }
 
     private void startThreads() {

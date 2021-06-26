@@ -18,7 +18,6 @@ public class DronesMessagesImplementation extends DronesMessagesGrpc.DronesMessa
 
         if (request.getId() != DroneController.getInstance().getCurrDrone().getId()){
 
-            //aggiunge il nuovo drone alla lista locale di ogni drone e identifica il nuovo successivo se è cambiato
             DroneController.getInstance().addDroneToList(newDrone);
 
             if (DroneController.getInstance().getCurrDrone().isMaster())
@@ -35,6 +34,8 @@ public class DronesMessagesImplementation extends DronesMessagesGrpc.DronesMessa
 
         DroneStats newStats = new DroneStats(request.getTimestamp(), new Coordinates(request.getCoordinateX(), request.getCoordinateY()), request.getKm(), request.getAvgPM10(), request.getBattery());
         MasterDroneController.getInstance().addStat(newStats);
+        DroneController.getInstance().getDronesList().get(DroneController.getInstance().getDronesList().indexOf(DroneController.getInstance().getByID(request.getDroneID()))).setDeliveryInProgress(false);
+        MasterDroneController.getInstance().disableQuit = false;
 
         response.onNext(DronesMessagesOuterClass.Empty.newBuilder().build());
         response.onCompleted();
@@ -104,11 +105,12 @@ public class DronesMessagesImplementation extends DronesMessagesGrpc.DronesMessa
             if (to.getId() == tokenDrone.getId())
                 DroneController.getInstance().getSuccDrone().setMaster(true);
 
+            DroneController.getInstance().getDronesInfo(tokenDrone);
             DroneController.getInstance().elected(tokenDrone,to);
         }
 
         if (DroneController.getInstance().getCurrDrone().getId() == request.getId())
-            MasterDroneController.getInstance().initialize();
+            MasterDroneController.getInstance().startDeliveryThreads();
 
         response.onNext(DronesMessagesOuterClass.Empty.newBuilder().build());
         response.onCompleted();
@@ -117,20 +119,13 @@ public class DronesMessagesImplementation extends DronesMessagesGrpc.DronesMessa
     @Override
     public void assignDelivery(DronesMessagesOuterClass.DeliveryInfo request, StreamObserver<DronesMessagesOuterClass.Empty> response){
 
-        DroneController.getInstance().setDelivery(new DeliveriesGenerator(request.getDeliveryID(), new Coordinates(request.getPickUpX(), request.getPickUpY()), new Coordinates(request.getDeliveryX(), request.getDeliveryY())));
-//System.out.println("done "+DroneController.getInstance().currentDelivery.getDeliveryID());
-        response.onNext(DronesMessagesOuterClass.Empty.newBuilder().build());
-        response.onCompleted();
-    }
+        if (DroneController.getInstance().notDeliverying && DroneController.getInstance().getCurrDrone().getBatteryLevel() > 15) {
+            DroneController.getInstance().setDelivery(new DeliveriesGenerator(request.getDeliveryID(), new Coordinates(request.getPickUpX(), request.getPickUpY()), new Coordinates(request.getDeliveryX(), request.getDeliveryY())));
+            response.onNext(DronesMessagesOuterClass.Empty.newBuilder().build());
+            response.onCompleted();
 
-    @Override
-    public void getDroneInformations (DronesMessagesOuterClass.Empty request, StreamObserver<DronesMessagesOuterClass.DroneInfo> response){
-
-        Drone tempDrone = DroneController.getInstance().getCurrDrone();
-        DronesMessagesOuterClass.DroneInfo reply = DronesMessagesOuterClass.DroneInfo.newBuilder().setId(tempDrone.getId()).setPort(tempDrone.getPort()).setHost(tempDrone.getHost()).setCoordinateX(tempDrone.getPosition_x()).setCoordinateY(tempDrone.getPosition_y()).setBattery(tempDrone.getBatteryLevel()).build();
-
-        response.onNext(reply);
-        response.onCompleted();
+        }else
+            response.onError(new Throwable());
     }
 
     @Override
@@ -165,7 +160,8 @@ public class DronesMessagesImplementation extends DronesMessagesGrpc.DronesMessa
             if (d.getId() == request.getId())
                 toRemove = d;
 
-        DroneController.getInstance().updateList(toRemove);
+        if (DroneController.getInstance().getDronesList().contains(toRemove))
+            DroneController.getInstance().updateList(toRemove);
 
         response.onNext(DronesMessagesOuterClass.Empty.newBuilder().build());
         response.onCompleted();

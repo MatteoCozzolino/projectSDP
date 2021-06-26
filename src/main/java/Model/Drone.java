@@ -12,7 +12,11 @@ public class Drone {
     private int position_x;
     private int position_y;
     private boolean master = false;
-    public boolean deliveryInProgress = false;
+    private boolean deliveryInProgress = false;
+
+    public void setDeliveryInProgress(boolean deliveryInProgress) {
+        this.deliveryInProgress = deliveryInProgress;
+    }
 
     public Drone(){}
 
@@ -71,5 +75,9 @@ public class Drone {
 
     public void setMaster(boolean master) {
         this.master = master;
+    }
+
+    public boolean isDeliveryInProgress() {
+        return deliveryInProgress;
     }
 }

@@ -17,11 +17,11 @@ public class PeerListenerThread extends Thread{
         try {
             grpcServer = ServerBuilder.forPort(DroneController.getInstance().getCurrDrone().getPort()).addService(new DronesMessagesImplementation()).build();
             grpcServer.start();
-//sincronization? perchè?
+
         synchronized (this) {
             notify();
         }
-        grpcServer.awaitTermination(1000, TimeUnit.MILLISECONDS);       //serve?
+        grpcServer.awaitTermination(1000, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
             e.printStackTrace();
         }

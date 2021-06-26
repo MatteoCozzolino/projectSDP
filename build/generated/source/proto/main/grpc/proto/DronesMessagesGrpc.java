@@ -182,37 +182,6 @@ public final class DronesMessagesGrpc {
     return getAssignDeliveryMethod;
   }
 
-  private static volatile io.grpc.MethodDescriptor<proto.DronesMessagesOuterClass.Empty,
-      proto.DronesMessagesOuterClass.DroneInfo> getGetDroneInformationsMethod;
-
-  @io.grpc.stub.annotations.RpcMethod(
-      fullMethodName = SERVICE_NAME + '/' + "getDroneInformations",
-      requestType = proto.DronesMessagesOuterClass.Empty.class,
-      responseType = proto.DronesMessagesOuterClass.DroneInfo.class,
-      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<proto.DronesMessagesOuterClass.Empty,
-      proto.DronesMessagesOuterClass.DroneInfo> getGetDroneInformationsMethod() {
-    io.grpc.MethodDescriptor<proto.DronesMessagesOuterClass.Empty, proto.DronesMessagesOuterClass.DroneInfo> getGetDroneInformationsMethod;
-    if ((getGetDroneInformationsMethod = DronesMessagesGrpc.getGetDroneInformationsMethod) == null) {
-      synchronized (DronesMessagesGrpc.class) {
-        if ((getGetDroneInformationsMethod = DronesMessagesGrpc.getGetDroneInformationsMethod) == null) {
-          DronesMessagesGrpc.getGetDroneInformationsMethod = getGetDroneInformationsMethod =
-              io.grpc.MethodDescriptor.<proto.DronesMessagesOuterClass.Empty, proto.DronesMessagesOuterClass.DroneInfo>newBuilder()
-              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "getDroneInformations"))
-              .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  proto.DronesMessagesOuterClass.Empty.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  proto.DronesMessagesOuterClass.DroneInfo.getDefaultInstance()))
-              .setSchemaDescriptor(new DronesMessagesMethodDescriptorSupplier("getDroneInformations"))
-              .build();
-        }
-      }
-    }
-    return getGetDroneInformationsMethod;
-  }
-
   private static volatile io.grpc.MethodDescriptor<proto.DronesMessagesOuterClass.DroneInfo,
       proto.DronesMessagesOuterClass.Empty> getSendDroneInfoToMasterMethod;
 
@@ -385,17 +354,7 @@ public final class DronesMessagesGrpc {
 
     /**
      * <pre>
-     *Metodo usato dal drone master appena eletto per raccogliere le informazioni su posizione e batteria di tutti i droni della smart city
-     * </pre>
-     */
-    public void getDroneInformations(proto.DronesMessagesOuterClass.Empty request,
-        io.grpc.stub.StreamObserver<proto.DronesMessagesOuterClass.DroneInfo> responseObserver) {
-      asyncUnimplementedUnaryCall(getGetDroneInformationsMethod(), responseObserver);
-    }
-
-    /**
-     * <pre>
-     *Metodo usato da un drone appena entrato nella rete per mandare le proprie informazioni al master
+     *Metodo usato da un drone per mandare le proprie informazioni al master
      * </pre>
      */
     public void sendDroneInfoToMaster(proto.DronesMessagesOuterClass.DroneInfo request,
@@ -460,13 +419,6 @@ public final class DronesMessagesGrpc {
                 proto.DronesMessagesOuterClass.DeliveryInfo,
                 proto.DronesMessagesOuterClass.Empty>(
                   this, METHODID_ASSIGN_DELIVERY)))
-          .addMethod(
-            getGetDroneInformationsMethod(),
-            asyncUnaryCall(
-              new MethodHandlers<
-                proto.DronesMessagesOuterClass.Empty,
-                proto.DronesMessagesOuterClass.DroneInfo>(
-                  this, METHODID_GET_DRONE_INFORMATIONS)))
           .addMethod(
             getSendDroneInfoToMasterMethod(),
             asyncUnaryCall(
@@ -567,18 +519,7 @@ public final class DronesMessagesGrpc {
 
     /**
      * <pre>
-     *Metodo usato dal drone master appena eletto per raccogliere le informazioni su posizione e batteria di tutti i droni della smart city
-     * </pre>
-     */
-    public void getDroneInformations(proto.DronesMessagesOuterClass.Empty request,
-        io.grpc.stub.StreamObserver<proto.DronesMessagesOuterClass.DroneInfo> responseObserver) {
-      asyncUnaryCall(
-          getChannel().newCall(getGetDroneInformationsMethod(), getCallOptions()), request, responseObserver);
-    }
-
-    /**
-     * <pre>
-     *Metodo usato da un drone appena entrato nella rete per mandare le proprie informazioni al master
+     *Metodo usato da un drone per mandare le proprie informazioni al master
      * </pre>
      */
     public void sendDroneInfoToMaster(proto.DronesMessagesOuterClass.DroneInfo request,
@@ -680,17 +621,7 @@ public final class DronesMessagesGrpc {
 
     /**
      * <pre>
-     *Metodo usato dal drone master appena eletto per raccogliere le informazioni su posizione e batteria di tutti i droni della smart city
-     * </pre>
-     */
-    public proto.DronesMessagesOuterClass.DroneInfo getDroneInformations(proto.DronesMessagesOuterClass.Empty request) {
-      return blockingUnaryCall(
-          getChannel(), getGetDroneInformationsMethod(), getCallOptions(), request);
-    }
-
-    /**
-     * <pre>
-     *Metodo usato da un drone appena entrato nella rete per mandare le proprie informazioni al master
+     *Metodo usato da un drone per mandare le proprie informazioni al master
      * </pre>
      */
     public proto.DronesMessagesOuterClass.Empty sendDroneInfoToMaster(proto.DronesMessagesOuterClass.DroneInfo request) {
@@ -794,18 +725,7 @@ public final class DronesMessagesGrpc {
 
     /**
      * <pre>
-     *Metodo usato dal drone master appena eletto per raccogliere le informazioni su posizione e batteria di tutti i droni della smart city
-     * </pre>
-     */
-    public com.google.common.util.concurrent.ListenableFuture<proto.DronesMessagesOuterClass.DroneInfo> getDroneInformations(
-        proto.DronesMessagesOuterClass.Empty request) {
-      return futureUnaryCall(
-          getChannel().newCall(getGetDroneInformationsMethod(), getCallOptions()), request);
-    }
-
-    /**
-     * <pre>
-     *Metodo usato da un drone appena entrato nella rete per mandare le proprie informazioni al master
+     *Metodo usato da un drone per mandare le proprie informazioni al master
      * </pre>
      */
     public com.google.common.util.concurrent.ListenableFuture<proto.DronesMessagesOuterClass.Empty> sendDroneInfoToMaster(
@@ -842,10 +762,9 @@ public final class DronesMessagesGrpc {
   private static final int METHODID_ELECTION = 2;
   private static final int METHODID_ELECTED = 3;
   private static final int METHODID_ASSIGN_DELIVERY = 4;
-  private static final int METHODID_GET_DRONE_INFORMATIONS = 5;
-  private static final int METHODID_SEND_DRONE_INFO_TO_MASTER = 6;
-  private static final int METHODID_ALIVE = 7;
-  private static final int METHODID_REMOVE = 8;
+  private static final int METHODID_SEND_DRONE_INFO_TO_MASTER = 5;
+  private static final int METHODID_ALIVE = 6;
+  private static final int METHODID_REMOVE = 7;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -883,10 +802,6 @@ public final class DronesMessagesGrpc {
         case METHODID_ASSIGN_DELIVERY:
           serviceImpl.assignDelivery((proto.DronesMessagesOuterClass.DeliveryInfo) request,
               (io.grpc.stub.StreamObserver<proto.DronesMessagesOuterClass.Empty>) responseObserver);
-          break;
-        case METHODID_GET_DRONE_INFORMATIONS:
-          serviceImpl.getDroneInformations((proto.DronesMessagesOuterClass.Empty) request,
-              (io.grpc.stub.StreamObserver<proto.DronesMessagesOuterClass.DroneInfo>) responseObserver);
           break;
         case METHODID_SEND_DRONE_INFO_TO_MASTER:
           serviceImpl.sendDroneInfoToMaster((proto.DronesMessagesOuterClass.DroneInfo) request,
@@ -966,7 +881,6 @@ public final class DronesMessagesGrpc {
               .addMethod(getElectionMethod())
               .addMethod(getElectedMethod())
               .addMethod(getAssignDeliveryMethod())
-              .addMethod(getGetDroneInformationsMethod())
               .addMethod(getSendDroneInfoToMasterMethod())
               .addMethod(getAliveMethod())
               .addMethod(getRemoveMethod())

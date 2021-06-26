@@ -5,12 +5,12 @@ public class DroneStats {
     private float timestamp;
     private Coordinates newCoordinates;
     private float kmCovered;
-    private float avgPM10;
+    private double avgPM10;
     private int newBatteryLevel;
 
     public DroneStats(){}
 
-    public DroneStats(float timestamp, Coordinates newCoordinates, float kmCovered, float avgPM10, int newBatteryLevel) {
+    public DroneStats(float timestamp, Coordinates newCoordinates, float kmCovered, double avgPM10, int newBatteryLevel) {
         this.timestamp = timestamp;
         this.newCoordinates = newCoordinates;
         this.kmCovered = kmCovered;
@@ -34,7 +34,7 @@ public class DroneStats {
         return kmCovered;
     }
 
-    public float getAvgPM10() {
+    public double getAvgPM10() {
         return avgPM10;
     }
 }
