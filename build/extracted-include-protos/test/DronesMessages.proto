@@ -29,6 +29,7 @@ message DroneData {
   required int32 id = 1;
   required int32  port = 2;
   required string host = 3;
+  optional int32 battery = 4;
 
 }
 
@@ -50,7 +51,7 @@ service DronesMessages {
   rpc election (DroneData) returns (Empty);   //Metodo per effettuare l'elezione nell'anello
   rpc elected (DroneData) returns (Empty); //Metodo per la notifica del nuovo drone master appena eletto
   rpc assignDelivery (DeliveryInfo) returns (Empty);  //Metodo usato dal drone master per assegnare la consegna
-  rpc sendDroneInfoToMaster (DroneInfo) returns (Empty);    //Metodo usato da un drone appena entrato nella rete per mandare le proprie informazioni al master
+  rpc sendDroneInfoToMaster (DroneInfo) returns (Empty);    //Metodo usato da un drone per mandare le proprie informazioni al master
   rpc alive (Empty) returns (Empty); //Metodo usato per controllare che il drone successivo nell'anello è alive
   rpc remove (DroneData) returns (Empty); //Metodo usato per notificare i peer quando è stato rilevato un drone offline
 }

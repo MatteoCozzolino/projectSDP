@@ -35,8 +35,7 @@ public class DronesMessagesImplementation extends DronesMessagesGrpc.DronesMessa
         DroneStats newStats = new DroneStats(request.getTimestamp(), new Coordinates(request.getCoordinateX(), request.getCoordinateY()), request.getKm(), request.getAvgPM10(), request.getBattery());
         MasterDroneController.getInstance().addStat(newStats);
         DroneController.getInstance().getDronesList().get(DroneController.getInstance().getDronesList().indexOf(DroneController.getInstance().getByID(request.getDroneID()))).setDeliveryInProgress(false);
-        MasterDroneController.getInstance().disableQuit = false;
-
+        MasterDroneController.getInstance().disableQuitCounter--;
         response.onNext(DronesMessagesOuterClass.Empty.newBuilder().build());
         response.onCompleted();
     }
@@ -47,48 +46,89 @@ public class DronesMessagesImplementation extends DronesMessagesGrpc.DronesMessa
         //rimuove il vecchio master
         DroneController.getInstance().updateList(DroneController.getInstance().getByID(DroneController.getInstance().masterID));
 
-        if (request.getId() > DroneController.getInstance().getCurrDrone().getId()){
-            Drone to = new Drone(DroneController.getInstance().getSuccDrone().getId(), DroneController.getInstance().getSuccDrone().getPort(), DroneController.getInstance().getSuccDrone().getHost());
-            Drone tokenDrone = new Drone(request.getId(), request.getPort(), request.getHost());
-            DroneController.getInstance().electionInProgress = true;
-            DroneController.getInstance().election(tokenDrone,to);
-            System.out.println("mando elezione a succ");    //temp
-        }
+        if (request.getBattery() == DroneController.getInstance().getCurrDrone().getBatteryLevel()) {
 
-        if (request.getId() < DroneController.getInstance().getCurrDrone().getId())
+            System.out.println(request.getBattery() + " token battery quando uguali" + DroneController.getInstance().getCurrDrone().getBatteryLevel());
+            if (request.getId() > DroneController.getInstance().getCurrDrone().getId()) {
+                Drone to = new Drone(DroneController.getInstance().getSuccDrone().getId(), DroneController.getInstance().getSuccDrone().getPort(), DroneController.getInstance().getSuccDrone().getHost());
+                Drone tokenDrone = new Drone(request.getId(), request.getPort(), request.getHost());
+                tokenDrone.setBatteryLevel(request.getBattery());
+                DroneController.getInstance().electionInProgress = true;
+                System.out.println("tokenid>currid" + request.getId() + "   " + DroneController.getInstance().getCurrDrone().getId());
+                DroneController.getInstance().election(tokenDrone, to);
 
-            if (!DroneController.getInstance().electionInProgress){
+                //response.onNext(DronesMessagesOuterClass.Empty.newBuilder().build());
+                //response.onCompleted();
+            }
+
+            if (request.getId() < DroneController.getInstance().getCurrDrone().getId()) {
+
+                //if (!DroneController.getInstance().electionInProgress) {
 
                 Drone to = new Drone(DroneController.getInstance().getSuccDrone().getId(), DroneController.getInstance().getSuccDrone().getPort(), DroneController.getInstance().getSuccDrone().getHost());
                 Drone tokenDrone = new Drone(DroneController.getInstance().getCurrDrone().getId(), DroneController.getInstance().getCurrDrone().getPort(), DroneController.getInstance().getCurrDrone().getHost());
+                tokenDrone.setBatteryLevel(DroneController.getInstance().getCurrDrone().getBatteryLevel());
                 DroneController.getInstance().electionInProgress = true;
-                DroneController.getInstance().election(tokenDrone,to);
+                DroneController.getInstance().election(tokenDrone, to);
+                //} else {
+                //response.onNext(DronesMessagesOuterClass.Empty.newBuilder().build());
+                //response.onCompleted();
+                //}
             }
-            else{
+            if (request.getId() == DroneController.getInstance().getCurrDrone().getId()) {
+
+                System.out.println("tokenid==currid " + request.getId() + "   " + DroneController.getInstance().getCurrDrone().getId());
+                //currentDrone è il master
+                DroneController.getInstance().getCurrDrone().setMaster(true);
+                DroneController.getInstance().setMasterInfos(DroneController.getInstance().getCurrDrone().getId(), DroneController.getInstance().getCurrDrone().getPort(), DroneController.getInstance().getCurrDrone().getHost());
+                DroneController.getInstance().electionInProgress = false;
+
+                //notifica gli altri droni
+                Drone to = new Drone(DroneController.getInstance().getSuccDrone().getId(), DroneController.getInstance().getSuccDrone().getPort(), DroneController.getInstance().getSuccDrone().getHost());
+                Drone tokenDrone = new Drone(DroneController.getInstance().getCurrDrone().getId(), DroneController.getInstance().getCurrDrone().getPort(), DroneController.getInstance().getCurrDrone().getHost());
+                DroneController.getInstance().elected(tokenDrone, to);
+
+                //response.onNext(DronesMessagesOuterClass.Empty.newBuilder().build());
+                //response.onCompleted();
+                System.out.println("sono il master eletto"); //temp
+            }
+            response.onNext(DronesMessagesOuterClass.Empty.newBuilder().build());
+            response.onCompleted();
+        }
+
+        if (request.getBattery() > DroneController.getInstance().getCurrDrone().getBatteryLevel()){
+            Drone to = new Drone(DroneController.getInstance().getSuccDrone().getId(), DroneController.getInstance().getSuccDrone().getPort(), DroneController.getInstance().getSuccDrone().getHost());
+            Drone tokenDrone = new Drone(request.getId(), request.getPort(), request.getHost());
+            tokenDrone.setBatteryLevel(request.getBattery());
+            DroneController.getInstance().electionInProgress = true;
+            DroneController.getInstance().election(tokenDrone,to);
+            System.out.println("mando elezione a succ");    //temp
+
+            response.onNext(DronesMessagesOuterClass.Empty.newBuilder().build());
+            response.onCompleted();
+        }
+
+        if (request.getBattery() < DroneController.getInstance().getCurrDrone().getBatteryLevel()) {
+
+            if (!DroneController.getInstance().electionInProgress) {
+
+                System.out.println("aaaaaaaaaaa");
+
+                Drone to = new Drone(DroneController.getInstance().getSuccDrone().getId(), DroneController.getInstance().getSuccDrone().getPort(), DroneController.getInstance().getSuccDrone().getHost());
+                Drone tokenDrone = new Drone(DroneController.getInstance().getCurrDrone().getId(), DroneController.getInstance().getCurrDrone().getPort(), DroneController.getInstance().getCurrDrone().getHost());
+                tokenDrone.setBatteryLevel(DroneController.getInstance().getCurrDrone().getBatteryLevel());
+                DroneController.getInstance().electionInProgress = true;
+                DroneController.getInstance().election(tokenDrone, to);
+            } else {
                 response.onNext(DronesMessagesOuterClass.Empty.newBuilder().build());
                 response.onCompleted();
             }
-
-
-        if (request.getId() == DroneController.getInstance().getCurrDrone().getId()){
-
-            //currentDrone è il master
-            DroneController.getInstance().getCurrDrone().setMaster(true);
-            DroneController.getInstance().setMasterInfos(DroneController.getInstance().getCurrDrone().getId(), DroneController.getInstance().getCurrDrone().getPort(), DroneController.getInstance().getCurrDrone().getHost());
-            DroneController.getInstance().electionInProgress = false;
-
-            //notifica gli altri droni
-            Drone to = new Drone(DroneController.getInstance().getSuccDrone().getId(), DroneController.getInstance().getSuccDrone().getPort(), DroneController.getInstance().getSuccDrone().getHost());
-            Drone tokenDrone = new Drone(DroneController.getInstance().getCurrDrone().getId(), DroneController.getInstance().getCurrDrone().getPort(), DroneController.getInstance().getCurrDrone().getHost());
-            DroneController.getInstance().elected(tokenDrone,to);
-
-
-            System.out.println("sono il master eletto"); //temp
         }
 
-        response.onNext(DronesMessagesOuterClass.Empty.newBuilder().build());
-        response.onCompleted();
+            //response.onNext(DronesMessagesOuterClass.Empty.newBuilder().build());
+            //response.onCompleted();
     }
+
 
     @Override
     public void elected(DronesMessagesOuterClass.DroneData request, StreamObserver<DronesMessagesOuterClass.Empty> response) {
@@ -119,7 +159,7 @@ public class DronesMessagesImplementation extends DronesMessagesGrpc.DronesMessa
     @Override
     public void assignDelivery(DronesMessagesOuterClass.DeliveryInfo request, StreamObserver<DronesMessagesOuterClass.Empty> response){
 
-        if (DroneController.getInstance().notDeliverying && DroneController.getInstance().getCurrDrone().getBatteryLevel() > 15) {
+        if (DroneController.getInstance().notDelivering && DroneController.getInstance().getCurrDrone().getBatteryLevel() > 15) {
             DroneController.getInstance().setDelivery(new DeliveriesGenerator(request.getDeliveryID(), new Coordinates(request.getPickUpX(), request.getPickUpY()), new Coordinates(request.getDeliveryX(), request.getDeliveryY())));
             response.onNext(DronesMessagesOuterClass.Empty.newBuilder().build());
             response.onCompleted();

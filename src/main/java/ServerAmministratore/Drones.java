@@ -29,7 +29,7 @@ public class Drones {
         return dronesInstance;
     }
 
-    public List<Drone> getDronesList(){
+    public synchronized List<Drone> getDronesList(){
         ArrayList<Drone> droneList = new ArrayList<>();
 
         droneList.addAll(this.dronesList);

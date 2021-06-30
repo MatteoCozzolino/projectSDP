@@ -63,7 +63,6 @@ public class DroneRESTClient {
         return droneList;
     }
 
-    //review quando si fa la logica dei droni
     public void leaveRequest (Drone drone) {
 
         try{

@@ -64,7 +64,7 @@ public class AdminRESTClient {
             if (response.getStatus() == 200)
                 statsList = gson.fromJson(response.getEntity(String.class), new TypeToken<ArrayList<GlobalStat>>(){}.getType());
             else
-                new RuntimeException("Server unavailable");         //da testare
+                new RuntimeException("Server unavailable");
 
         } catch (RuntimeException e) {
             e.printStackTrace();
@@ -73,9 +73,9 @@ public class AdminRESTClient {
         return statsList;
     }
 
-    public int avgDeliveriesRequest (int t1, int t2){
+    public float avgDeliveriesRequest (int t1, int t2){
 
-        int avgDelivs = 0;
+        float avgDelivs = 0;
 
         try{
 
@@ -83,9 +83,9 @@ public class AdminRESTClient {
             ClientResponse response = webResource.type("application/json").accept("application/json").get(ClientResponse.class);
 
             if (response.getStatus() == 200)
-                avgDelivs = Integer.parseInt(response.getEntity(String.class));
+                avgDelivs = Float.parseFloat(response.getEntity(String.class));
             else
-                new RuntimeException("Server unavailable");         //da testare
+                new RuntimeException("Server unavailable");
 
         } catch (RuntimeException e) {
             e.printStackTrace();
@@ -95,9 +95,9 @@ public class AdminRESTClient {
 
     }
 
-    public int avgKMRequest (int t1, int t2){
+    public float avgKMRequest (int t1, int t2){
 
-        int avgKM = 0;
+        float avgKM = 0;
 
         try{
 
@@ -105,9 +105,9 @@ public class AdminRESTClient {
             ClientResponse response = webResource.type("application/json").accept("application/json").get(ClientResponse.class);
 
             if (response.getStatus() == 200)
-                avgKM = Integer.parseInt(response.getEntity(String.class));
+                avgKM = Float.parseFloat(response.getEntity(String.class));
             else
-                new RuntimeException("Server unavailable");         //da testare
+                new RuntimeException("Server unavailable");
 
         } catch (RuntimeException e) {
             e.printStackTrace();

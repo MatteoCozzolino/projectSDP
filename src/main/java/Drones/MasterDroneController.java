@@ -12,6 +12,7 @@ import org.eclipse.paho.client.mqttv3.*;
 import proto.DronesMessagesGrpc;
 import proto.DronesMessagesOuterClass;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 
 public class MasterDroneController extends DroneController{
@@ -20,7 +21,7 @@ public class MasterDroneController extends DroneController{
     private final ArrayList<DeliveriesGenerator> deliveryQueue = new ArrayList<>();
     private static MasterDroneController masterDroneController;
     private MqttClient mqttClient;
-    public boolean disableQuit = false;
+    public int disableQuitCounter;
 
     public static MasterDroneController getInstance(){
         if(masterDroneController == null)
@@ -122,14 +123,14 @@ public class MasterDroneController extends DroneController{
 
     public void assignDelivery(DeliveriesGenerator currDelivery){
 
-        disableQuit = true;
-
         Drone bestDrone = getClosestAvailableDrone(currDelivery.getPickUpPoint());
         ManagedChannel channel = null;
 
         try{
-            if (bestDrone.getId() == 0)     //controllare
+            if (bestDrone.getId() == 0)
                 return;
+
+            disableQuitCounter++;
 
             System.out.println("assegno delivery " + currDelivery.getPickUpPoint().getX() + " " + currDelivery.getPickUpPoint().getY() + " a drone " + bestDrone.getId() + " del ID " + currDelivery.getDeliveryID());
             channel = ManagedChannelBuilder.forTarget(bestDrone.getHost() + ":" + bestDrone.getPort()).usePlaintext().build();
@@ -138,9 +139,10 @@ public class MasterDroneController extends DroneController{
 
             DronesMessagesOuterClass.Empty reply = stub.assignDelivery(request);
             DroneController.getInstance().getDronesList().get(DroneController.getInstance().getDronesList().indexOf(bestDrone)).setDeliveryInProgress(false);
+
             deliveryQueue.remove(currDelivery);
         }catch (Throwable t){
-            return;
+            disableQuitCounter--;
         }
         finally{
             if (channel != null) {
@@ -190,30 +192,35 @@ public class MasterDroneController extends DroneController{
 
         DroneController.getInstance().statsThread.stopThread();
 
-        //Salvo lo stato corrent delle due code per poter valutare se il drone master ha ricevuto tutte le risposte dai droni prima di uscire della rete
-        int droneStatsSnapshot = netDroneStats.size();
+        //Salvo lo stato corrente della coda delle consegne per valutare se il drone master ha ricevuto tutte le risposte dai droni prima di uscire della rete
         int deliveryQueueSnapshot = deliveryQueue.size();
 
-        if (deliveryQueueSnapshot == 0){
+        if (deliveryQueueSnapshot == 0 && disableQuitCounter == 0){
             DroneRESTClient.getInstance().sendGlobalStats(calculateGlobalStats());
         }
-        else
-            while (true){
-                //Il drone master si mette in attesa delle statistiche degli altri droni, in questo caso particolare una sleep in un ciclo while non
-                //costituisce una busy waiting poichè il master in questa fase è solamente in attesa delle risposte grpc
+        else{
+            Thread statsChecker = new Thread(this::checkRecievedStats);
+            statsChecker.start();
+
+            synchronized (this){
                 try {
-                    Thread.sleep(3000);
+                    wait();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+            }
+            DroneRESTClient.getInstance().sendGlobalStats(calculateGlobalStats());
+        }
+    }
 
-                if (netDroneStats.size() == droneStatsSnapshot + deliveryQueueSnapshot){
-                //invio al server amministratore le ultime statistiche globali calcolate
-                    DroneRESTClient.getInstance().sendGlobalStats(calculateGlobalStats());
-                    return;
+    public void checkRecievedStats() {
+        while (true)
+            synchronized (this){
+                if (deliveryQueue.size() == 0 && disableQuitCounter == 0){
+                    notifyAll();
+                    break;
                 }
             }
-
     }
 
     public GlobalStat calculateGlobalStats (){
@@ -224,7 +231,6 @@ public class MasterDroneController extends DroneController{
         float numberOfDrones = tempDroneList.size();
         GlobalStat stats = new GlobalStat();
 
-        //stats.setTimestamp();         da sistemare
         stats.setAvgNumberDeliveries(tempDroneStatsList.size()/numberOfDrones);
 
         int sumKm = 0;
@@ -240,6 +246,7 @@ public class MasterDroneController extends DroneController{
         stats.setAvgKm(sumKm/numberOfDrones);
         stats.setAvgPM10(sumPM10/numberOfDrones);
         stats.setAvgResidualBatteries(sumBattery/numberOfDrones);
+        stats.setTimestamp(Float.parseFloat(new Timestamp(System.currentTimeMillis()).toString().substring(17)));
 
         netDroneStats.removeAll(tempDroneStatsList);
 

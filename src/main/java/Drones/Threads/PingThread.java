@@ -14,6 +14,9 @@ public class PingThread extends Thread{
 
         Drone succDrone = DroneController.getInstance().getSuccDrone();
 
+        if (DroneController.getInstance().masterID == 0)
+            DroneController.getInstance().election(DroneController.getInstance().getCurrDrone(), succDrone);
+
         while (true) {
 
             if (!pingSucc(succDrone)) {

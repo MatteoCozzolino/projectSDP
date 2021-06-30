@@ -15,13 +15,11 @@ public class AdminInterface {
 
         try {
             AdminRESTClient.getInstance().initialize(serverHost , serverPort);
-            launchMenu();                   //testare tutti i metodi con valori appropriati
+            launchMenu();
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
     }
 
     private void launchMenu() {
@@ -39,27 +37,31 @@ public class AdminInterface {
             switch (choice){
                 case 1 :
                     ArrayList<Drone> drones = AdminRESTClient.getInstance().droneListRequest();
-                    System.out.println(drones.toString());          //da controllare
+                    System.out.println("Displaying Ids of the drones in the list.");
+                    for (Drone drone : drones)
+                        System.out.println(drone.getId());
                     break;
                 case 2 :
                     System.out.println("How many of the most recent global statistics do you wish to have?\n");
                     int n = choiceListener.nextInt();
                     ArrayList<GlobalStat> globalStats = AdminRESTClient.getInstance().lastStatsRequest(n);
-                    System.out.println(globalStats.toString());
+                    System.out.println("Displaying " + n + " last global stats.");
+                    for (GlobalStat stat : globalStats)
+                        System.out.println("\nMedie al timestamp " + stat.getTimestamp() + ":\nconsegne - " + stat.getAvgNumberDeliveries() + "\nkm - " + stat.getAvgKm() + "\nPM10 - " + stat.getAvgPM10() + "\nbatteria - " + stat.getAvgResidualBatteries());
                     break;
                 case 3 :
-                    System.out.println("Between which timestamps do you want the average?\n");
-                    int t1 = choiceListener.nextInt();              //controllare
+                    System.out.println("Between which timestamps do you want the average? Pick values between 0 and 60 seconds\n");
+                    int t1 = choiceListener.nextInt();
                     int t2 = choiceListener.nextInt();
-                    int avgDeliv = AdminRESTClient.getInstance().avgDeliveriesRequest(t1,t2);
-                    System.out.println("\nThe average number of deliveries done by drones is: " + avgDeliv + "\n");
+                    float avgDeliv = AdminRESTClient.getInstance().avgDeliveriesRequest(t1,t2);
+                    System.out.println("\nThe average number of deliveries done by drones is: " + avgDeliv);
                     break;
                 case 4 :
-                    System.out.println("Between which timestamps do you want the average?\n");
-                    int time1 = choiceListener.nextInt();              //controllare
+                    System.out.println("Between which timestamps do you want the average? Pick values between 0 and 60 seconds\n");
+                    int time1 = choiceListener.nextInt();
                     int time2 = choiceListener.nextInt();
-                    int avgKM = AdminRESTClient.getInstance().avgKMRequest(time1,time2);
-                    System.out.println("\nThe average Km done by drones is: " + avgKM + "\n");
+                    float avgKM = AdminRESTClient.getInstance().avgKMRequest(time1,time2);
+                    System.out.println("\nThe average Km done by drones is: " + avgKM);
                     break;
                 case 5 :
                     System.out.println("Thanks for using our services, the client will shut down!");

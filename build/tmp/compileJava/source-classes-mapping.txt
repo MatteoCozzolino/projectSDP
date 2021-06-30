@@ -19,8 +19,8 @@ DronesServices.java
  DronesServices$MasterDrone$1
  DronesServices$MasterDrone$Builder
  DronesServices$MasterDroneOrBuilder
-Dronazon/Dronazon.java
- Dronazon.Dronazon
+ServerAmministratore/StartServer.java
+ ServerAmministratore.StartServer
 ServerAmministratore/Drones.java
  ServerAmministratore.Drones
 Drones/SensorSimulator/Buffer.java
@@ -52,10 +52,8 @@ proto/DronesMessagesOuterClass.java
  proto.DronesMessagesOuterClass$EmptyOrBuilder
 Model/GlobalStat.java
  Model.GlobalStat
-Amministratore/AdminRESTClient.java
- Amministratore.AdminRESTClient
- Amministratore.AdminRESTClient$1
- Amministratore.AdminRESTClient$2
+Dronazon/Dronazon.java
+ Dronazon.Dronazon
 Amministratore/AdminInterface.java
  Amministratore.AdminInterface
 ServerAmministratore/DroneServices.java
@@ -65,21 +63,23 @@ ServerAmministratore/GlobalStats.java
  ServerAmministratore.GlobalStats$1
 Model/Coordinates.java
  Model.Coordinates
-Model/DroneStats.java
- Model.DroneStats
+Drones/DroneRESTClient.java
+ Drones.DroneRESTClient
+ Drones.DroneRESTClient$1
 Dronazon/DeliveriesGenerator.java
  Dronazon.DeliveriesGenerator
 ServerAmministratore/GlobalStatsServices.java
  ServerAmministratore.GlobalStatsServices
-Drones/DroneRESTClient.java
- Drones.DroneRESTClient
- Drones.DroneRESTClient$1
+Amministratore/AdminRESTClient.java
+ Amministratore.AdminRESTClient
+ Amministratore.AdminRESTClient$1
+ Amministratore.AdminRESTClient$2
 Drones/SensorSimulator/Simulator.java
  Drones.SensorSimulator.Simulator
-ServerAmministratore/StartServer.java
- ServerAmministratore.StartServer
 Model/Drone.java
  Model.Drone
+Model/DroneStats.java
+ Model.DroneStats
 proto/DronesMessagesGrpc.java
  proto.DronesMessagesGrpc
  proto.DronesMessagesGrpc$1
@@ -91,10 +91,6 @@ proto/DronesMessagesGrpc.java
  proto.DronesMessagesGrpc$DronesMessagesMethodDescriptorSupplier
  proto.DronesMessagesGrpc$DronesMessagesStub
  proto.DronesMessagesGrpc$MethodHandlers
-Drones/Threads/PingThread.java
- Drones.Threads.PingThread
-Drones/SensorSimulator/BufferImpl.java
- Drones.SensorSimulator.BufferImpl
 Drones/Threads/PeerListenerThread.java
  Drones.Threads.PeerListenerThread
 Drones/DronesMessagesImplementation.java
@@ -107,6 +103,10 @@ Drones/Threads/StatsThread.java
  Drones.Threads.StatsThread
 Drones/DroneStarter.java
  Drones.DroneStarter
+Drones/Threads/PingThread.java
+ Drones.Threads.PingThread
 Drones/MasterDroneController.java
  Drones.MasterDroneController
  Drones.MasterDroneController$1
+Drones/SensorSimulator/BufferImpl.java
+ Drones.SensorSimulator.BufferImpl

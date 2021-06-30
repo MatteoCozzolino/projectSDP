@@ -35,7 +35,6 @@ public class GlobalStat {
     private float avgResidualBatteries;
 
     public GlobalStat(){
-
     }
 
     public GlobalStat(float timestamp, float avgNumberDeliveries, float avgKm, float avgPM10, float avgResidualBatteries) {

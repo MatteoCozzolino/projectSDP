@@ -2320,6 +2320,17 @@ public final class DronesMessagesOuterClass {
      */
     com.google.protobuf.ByteString
         getHostBytes();
+
+    /**
+     * <code>optional int32 battery = 4;</code>
+     * @return Whether the battery field is set.
+     */
+    boolean hasBattery();
+    /**
+     * <code>optional int32 battery = 4;</code>
+     * @return The battery.
+     */
+    int getBattery();
   }
   /**
    * Protobuf type {@code proto.DroneData}
@@ -2382,6 +2393,11 @@ public final class DronesMessagesOuterClass {
               com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000004;
               host_ = bs;
+              break;
+            }
+            case 32: {
+              bitField0_ |= 0x00000008;
+              battery_ = input.readInt32();
               break;
             }
             default: {
@@ -2496,6 +2512,23 @@ public final class DronesMessagesOuterClass {
       }
     }
 
+    public static final int BATTERY_FIELD_NUMBER = 4;
+    private int battery_;
+    /**
+     * <code>optional int32 battery = 4;</code>
+     * @return Whether the battery field is set.
+     */
+    public boolean hasBattery() {
+      return ((bitField0_ & 0x00000008) != 0);
+    }
+    /**
+     * <code>optional int32 battery = 4;</code>
+     * @return The battery.
+     */
+    public int getBattery() {
+      return battery_;
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -2531,6 +2564,9 @@ public final class DronesMessagesOuterClass {
       if (((bitField0_ & 0x00000004) != 0)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 3, host_);
       }
+      if (((bitField0_ & 0x00000008) != 0)) {
+        output.writeInt32(4, battery_);
+      }
       unknownFields.writeTo(output);
     }
 
@@ -2550,6 +2586,10 @@ public final class DronesMessagesOuterClass {
       }
       if (((bitField0_ & 0x00000004) != 0)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, host_);
+      }
+      if (((bitField0_ & 0x00000008) != 0)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(4, battery_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -2581,6 +2621,11 @@ public final class DronesMessagesOuterClass {
         if (!getHost()
             .equals(other.getHost())) return false;
       }
+      if (hasBattery() != other.hasBattery()) return false;
+      if (hasBattery()) {
+        if (getBattery()
+            != other.getBattery()) return false;
+      }
       if (!unknownFields.equals(other.unknownFields)) return false;
       return true;
     }
@@ -2603,6 +2648,10 @@ public final class DronesMessagesOuterClass {
       if (hasHost()) {
         hash = (37 * hash) + HOST_FIELD_NUMBER;
         hash = (53 * hash) + getHost().hashCode();
+      }
+      if (hasBattery()) {
+        hash = (37 * hash) + BATTERY_FIELD_NUMBER;
+        hash = (53 * hash) + getBattery();
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
@@ -2743,6 +2792,8 @@ public final class DronesMessagesOuterClass {
         bitField0_ = (bitField0_ & ~0x00000002);
         host_ = "";
         bitField0_ = (bitField0_ & ~0x00000004);
+        battery_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000008);
         return this;
       }
 
@@ -2783,6 +2834,10 @@ public final class DronesMessagesOuterClass {
           to_bitField0_ |= 0x00000004;
         }
         result.host_ = host_;
+        if (((from_bitField0_ & 0x00000008) != 0)) {
+          result.battery_ = battery_;
+          to_bitField0_ |= 0x00000008;
+        }
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -2842,6 +2897,9 @@ public final class DronesMessagesOuterClass {
           bitField0_ |= 0x00000004;
           host_ = other.host_;
           onChanged();
+        }
+        if (other.hasBattery()) {
+          setBattery(other.getBattery());
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -3036,6 +3094,43 @@ public final class DronesMessagesOuterClass {
   }
   bitField0_ |= 0x00000004;
         host_ = value;
+        onChanged();
+        return this;
+      }
+
+      private int battery_ ;
+      /**
+       * <code>optional int32 battery = 4;</code>
+       * @return Whether the battery field is set.
+       */
+      public boolean hasBattery() {
+        return ((bitField0_ & 0x00000008) != 0);
+      }
+      /**
+       * <code>optional int32 battery = 4;</code>
+       * @return The battery.
+       */
+      public int getBattery() {
+        return battery_;
+      }
+      /**
+       * <code>optional int32 battery = 4;</code>
+       * @param value The battery to set.
+       * @return This builder for chaining.
+       */
+      public Builder setBattery(int value) {
+        bitField0_ |= 0x00000008;
+        battery_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional int32 battery = 4;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearBattery() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        battery_ = 0;
         onChanged();
         return this;
       }
@@ -4485,21 +4580,21 @@ public final class DronesMessagesOuterClass {
       "\n\ttimestamp\030\001 \002(\002\022\024\n\014coordinate_x\030\002 \002(\005\022" +
       "\024\n\014coordinate_y\030\003 \002(\005\022\n\n\002km\030\004 \002(\002\022\017\n\007avg" +
       "PM10\030\005 \002(\001\022\017\n\007battery\030\006 \002(\005\022\017\n\007droneID\030\007" +
-      " \002(\005\"3\n\tDroneData\022\n\n\002id\030\001 \002(\005\022\014\n\004port\030\002 " +
-      "\002(\005\022\014\n\004host\030\003 \002(\t\"n\n\014DeliveryInfo\022\022\n\ndel" +
-      "iveryID\030\001 \002(\005\022\020\n\010pickUp_x\030\002 \002(\005\022\020\n\010pickU" +
-      "p_y\030\003 \002(\005\022\022\n\ndelivery_x\030\004 \002(\005\022\022\n\ndeliver" +
-      "y_y\030\005 \002(\005\"\007\n\005Empty2\377\002\n\016DronesMessages\022+\n" +
-      "\005greet\022\020.proto.DroneData\032\020.proto.DroneDa" +
-      "ta\022,\n\tsendStats\022\021.proto.DroneStats\032\014.pro" +
-      "to.Empty\022*\n\010election\022\020.proto.DroneData\032\014" +
-      ".proto.Empty\022)\n\007elected\022\020.proto.DroneDat" +
-      "a\032\014.proto.Empty\0223\n\016assignDelivery\022\023.prot" +
-      "o.DeliveryInfo\032\014.proto.Empty\0227\n\025sendDron" +
-      "eInfoToMaster\022\020.proto.DroneInfo\032\014.proto." +
-      "Empty\022#\n\005alive\022\014.proto.Empty\032\014.proto.Emp" +
-      "ty\022(\n\006remove\022\020.proto.DroneData\032\014.proto.E" +
-      "mpty"
+      " \002(\005\"D\n\tDroneData\022\n\n\002id\030\001 \002(\005\022\014\n\004port\030\002 " +
+      "\002(\005\022\014\n\004host\030\003 \002(\t\022\017\n\007battery\030\004 \001(\005\"n\n\014De" +
+      "liveryInfo\022\022\n\ndeliveryID\030\001 \002(\005\022\020\n\010pickUp" +
+      "_x\030\002 \002(\005\022\020\n\010pickUp_y\030\003 \002(\005\022\022\n\ndelivery_x" +
+      "\030\004 \002(\005\022\022\n\ndelivery_y\030\005 \002(\005\"\007\n\005Empty2\377\002\n\016" +
+      "DronesMessages\022+\n\005greet\022\020.proto.DroneDat" +
+      "a\032\020.proto.DroneData\022,\n\tsendStats\022\021.proto" +
+      ".DroneStats\032\014.proto.Empty\022*\n\010election\022\020." +
+      "proto.DroneData\032\014.proto.Empty\022)\n\007elected" +
+      "\022\020.proto.DroneData\032\014.proto.Empty\0223\n\016assi" +
+      "gnDelivery\022\023.proto.DeliveryInfo\032\014.proto." +
+      "Empty\0227\n\025sendDroneInfoToMaster\022\020.proto.D" +
+      "roneInfo\032\014.proto.Empty\022#\n\005alive\022\014.proto." +
+      "Empty\032\014.proto.Empty\022(\n\006remove\022\020.proto.Dr" +
+      "oneData\032\014.proto.Empty"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -4522,7 +4617,7 @@ public final class DronesMessagesOuterClass {
     internal_static_proto_DroneData_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_proto_DroneData_descriptor,
-        new java.lang.String[] { "Id", "Port", "Host", });
+        new java.lang.String[] { "Id", "Port", "Host", "Battery", });
     internal_static_proto_DeliveryInfo_descriptor =
       getDescriptor().getMessageTypes().get(3);
     internal_static_proto_DeliveryInfo_fieldAccessorTable = new

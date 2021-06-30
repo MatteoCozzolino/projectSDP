@@ -9,7 +9,6 @@ public class BufferImpl implements Buffer{
 
     private List<Measurement> buffer;
     private double average;
-    //private double timestamp;
     private int counter;
 
     public BufferImpl (){
@@ -17,7 +16,6 @@ public class BufferImpl implements Buffer{
         buffer = new ArrayList<>(8);
         counter = 0;
         average = 0;
-        //timestamp = 0;
     }
 
     @Override
@@ -28,11 +26,8 @@ public class BufferImpl implements Buffer{
 
         counter++;
 
-        if (counter >= 8){
-        //timestamp = m.getTimestamp(); serve?
-        buffer = readAllAndClean();
-
-        }
+        if (counter >= 8)
+            buffer = readAllAndClean();
     }
 
     @Override

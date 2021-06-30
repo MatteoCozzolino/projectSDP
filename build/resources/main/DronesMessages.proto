@@ -29,6 +29,7 @@ message DroneData {
   required int32 id = 1;
   required int32  port = 2;
   required string host = 3;
+  optional int32 battery = 4;
 
 }
 
