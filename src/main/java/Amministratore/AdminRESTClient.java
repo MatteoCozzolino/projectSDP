@@ -73,7 +73,7 @@ public class AdminRESTClient {
         return statsList;
     }
 
-    public float avgDeliveriesRequest (int t1, int t2){
+    public float avgDeliveriesRequest (float t1, float t2){
 
         float avgDelivs = 0;
 
@@ -95,7 +95,7 @@ public class AdminRESTClient {
 
     }
 
-    public float avgKMRequest (int t1, int t2){
+    public float avgKMRequest (float t1, float t2){
 
         float avgKM = 0;
 

@@ -37,15 +37,6 @@ public class GlobalStat {
     public GlobalStat(){
     }
 
-    public GlobalStat(float timestamp, float avgNumberDeliveries, float avgKm, float avgPM10, float avgResidualBatteries) {
-        this.timestamp = timestamp;
-        this.avgNumberDeliveries = avgNumberDeliveries;
-        this.avgKm = avgKm;
-        this.avgPM10 = avgPM10;
-        this.avgResidualBatteries = avgResidualBatteries;
-    }
-
-
     public float getTimestamp() {
         return timestamp;
     }

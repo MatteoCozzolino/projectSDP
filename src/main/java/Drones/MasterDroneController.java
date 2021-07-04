@@ -132,7 +132,6 @@ public class MasterDroneController extends DroneController{
 
             disableQuitCounter++;
 
-            System.out.println("assegno delivery " + currDelivery.getPickUpPoint().getX() + " " + currDelivery.getPickUpPoint().getY() + " a drone " + bestDrone.getId() + " del ID " + currDelivery.getDeliveryID());
             channel = ManagedChannelBuilder.forTarget(bestDrone.getHost() + ":" + bestDrone.getPort()).usePlaintext().build();
             DronesMessagesGrpc.DronesMessagesBlockingStub stub = DronesMessagesGrpc.newBlockingStub(channel);
             DronesMessagesOuterClass.DeliveryInfo request = DronesMessagesOuterClass.DeliveryInfo.newBuilder().setDeliveryID(currDelivery.getDeliveryID()).setPickUpX(currDelivery.getPickUpPoint().getX()).setPickUpY(currDelivery.getPickUpPoint().getY()).setDeliveryX(currDelivery.getDeliveryPoint().getX()).setDeliveryY(currDelivery.getDeliveryPoint().getY()).build();
@@ -140,7 +139,7 @@ public class MasterDroneController extends DroneController{
             DronesMessagesOuterClass.Empty reply = stub.assignDelivery(request);
             DroneController.getInstance().getDronesList().get(DroneController.getInstance().getDronesList().indexOf(bestDrone)).setDeliveryInProgress(false);
 
-            deliveryQueue.remove(currDelivery);
+            deliveryQueue.remove(0);
         }catch (Throwable t){
             disableQuitCounter--;
         }
@@ -204,7 +203,7 @@ public class MasterDroneController extends DroneController{
 
             synchronized (this){
                 try {
-                    wait();
+                    this.wait();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -217,8 +216,8 @@ public class MasterDroneController extends DroneController{
         while (true)
             synchronized (this){
                 if (deliveryQueue.size() == 0 && disableQuitCounter == 0){
-                    notifyAll();
-                    break;
+                this.notify();
+                break;
                 }
             }
     }
@@ -246,7 +245,11 @@ public class MasterDroneController extends DroneController{
         stats.setAvgKm(sumKm/numberOfDrones);
         stats.setAvgPM10(sumPM10/numberOfDrones);
         stats.setAvgResidualBatteries(sumBattery/numberOfDrones);
-        stats.setTimestamp(Float.parseFloat(new Timestamp(System.currentTimeMillis()).toString().substring(17)));
+
+        //calcolo il timestamp in secondi
+        String ts = new Timestamp(System.currentTimeMillis()).toString().substring(14);
+        float tsInSeconds = (Float.parseFloat(ts.substring(0,2))*60) + Float.parseFloat(ts.substring(3));
+        stats.setTimestamp(tsInSeconds);
 
         netDroneStats.removeAll(tempDroneStatsList);
 

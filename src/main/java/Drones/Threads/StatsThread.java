@@ -12,7 +12,7 @@ public class StatsThread extends Thread{
     public void run() {
         while (flag) {
 
-            System.out.println("Il drone ha effettuato " + DroneController.getInstance().totalNumberDeliveries + " consegne, percorso " + DroneController.getInstance().totalKm + " km ed ha il " + DroneController.getInstance().getCurrDrone().getBatteryLevel() + "% di batteria residua.");
+            System.out.println("\nIl drone ha effettuato " + DroneController.getInstance().totalNumberDeliveries + " consegne, percorso " + DroneController.getInstance().totalKm + " km ed ha il " + DroneController.getInstance().getCurrDrone().getBatteryLevel() + "% di batteria residua.");
 
             if (DroneController.getInstance().getCurrDrone().isMaster())
                 DroneRESTClient.getInstance().sendGlobalStats(MasterDroneController.getInstance().calculateGlobalStats());

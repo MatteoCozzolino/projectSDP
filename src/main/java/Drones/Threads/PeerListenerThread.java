@@ -27,7 +27,7 @@ public class PeerListenerThread extends Thread{
         }
     }
 
-    public void shutdown(){     //chiamare quando si spegne un drone
+    public void shutdown(){
         grpcServer.shutdown();
         synchronized (this){
             notify();

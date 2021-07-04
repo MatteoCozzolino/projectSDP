@@ -13,7 +13,6 @@ import java.util.*;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Drones {
 
-    //Making the drone list a singleton
     private static Drones dronesInstance;
 
     @XmlElement(name="drone")
@@ -30,9 +29,8 @@ public class Drones {
     }
 
     public synchronized List<Drone> getDronesList(){
-        ArrayList<Drone> droneList = new ArrayList<>();
 
-        droneList.addAll(this.dronesList);
+        ArrayList<Drone> droneList = new ArrayList<>(this.dronesList);
 
         return new ArrayList<>(droneList);
     }

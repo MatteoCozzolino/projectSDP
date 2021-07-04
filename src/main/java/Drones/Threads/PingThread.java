@@ -14,10 +14,11 @@ public class PingThread extends Thread{
 
         Drone succDrone = DroneController.getInstance().getSuccDrone();
 
-        if (DroneController.getInstance().masterID == 0)
-            DroneController.getInstance().election(DroneController.getInstance().getCurrDrone(), succDrone);
 
         while (true) {
+
+            if (DroneController.getInstance().getDronesList().size() == 1 && !DroneController.getInstance().getCurrDrone().isMaster())
+                DroneController.getInstance().election(DroneController.getInstance().getCurrDrone(), DroneController.getInstance().getSuccDrone());
 
             if (!pingSucc(succDrone)) {
 
@@ -40,17 +41,16 @@ public class PingThread extends Thread{
                 }
             }
 
-            //Il Thread aspetta 10 secondi prima di inviare un altro ping
+            if (succDrone != DroneController.getInstance().getSuccDrone())
+                succDrone= DroneController.getInstance().getSuccDrone();
+
+            //Il Thread aspetta 5 secondi prima di inviare un altro ping
             try {
-                Thread.sleep(10000);
+                Thread.sleep(5000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
-            succDrone= DroneController.getInstance().getSuccDrone();
-
         }
-
     }
 
     private boolean pingSucc(Drone succDrone) {
@@ -67,6 +67,7 @@ public class PingThread extends Thread{
             return true;
 
         }catch (Throwable t){
+            assert channel != null;
             channel.shutdownNow();
             return false;
         }

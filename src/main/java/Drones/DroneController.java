@@ -10,23 +10,13 @@ import Model.Drone;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.Status;
 import proto.DronesMessagesGrpc;
 import proto.DronesMessagesOuterClass;
-
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
 
-/*TODO
-- concorrenza
-- casi limite: - utente scrive "quit" mentre è partecipante in un'elezione -> non si permette l'uscita.  FATTO
-               - drone che vuole uscire durante un'elezione ma lui non è ancora partecipante -> si permette l'uscita ma quando il messaggio di election/elected lo raggiunge
-                 si contatta il successivo o il successivo del successivo e così via.   FATTO
-               - un drone entra nella rete prima che l'elezione cominci -> se alla fine dei thread che effettuano la procedura di greeting non sono state ottenute le informazioni
-                 del master, allora fa partire un'elezione      FATTO
-               -
-- controllare election quando batteria uguale ma id diversi
-*/
 public class DroneController {
 
     private ArrayList<Drone> dronesList = new ArrayList<>();
@@ -42,6 +32,7 @@ public class DroneController {
     public float totalKm = 0;
     public boolean notDelivering = true;
     private ArrayList<Double> PM10values;
+    public int lastDeliveryID;
     PM10Simulator simulator;
     StatsThread statsThread;
 
@@ -86,7 +77,8 @@ public class DroneController {
 
         if (notDelivering){
             notDelivering = false;
-            System.out.println(" INIZIO   battery :"+drone.getBatteryLevel()+" posiz partenza "+drone.getPosition_x() + " "+drone.getPosition_y()+"   pickup"+currentDelivery.getPickUpPoint().getX()+currentDelivery.getPickUpPoint().getY());
+            System.out.println("Consegna con ID " + currentDelivery.getDeliveryID() + " in corso... ");
+            lastDeliveryID = currentDelivery.getDeliveryID();
 
             //calcolo km percorsi
             float d1 = (float) Math.sqrt(Math.pow((currentDelivery.getPickUpPoint().getX() - drone.getPosition_x()),2) + Math.pow((currentDelivery.getPickUpPoint().getY() - drone.getPosition_y()),2));
@@ -122,7 +114,7 @@ public class DroneController {
                 PM10values.clear();
             }
 
-            System.out.println(" FINE   battery :"+drone.getBatteryLevel()+" nuova posiz "+drone.getPosition_x() + " "+drone.getPosition_y() + "     "+totalNumberDeliveries);  //temp
+            System.out.println("Consegna terminata!");
 
             sendStats(Float.parseFloat(ts),km, pm10);
             notDelivering = true;
@@ -218,6 +210,13 @@ public class DroneController {
 
     private void greeting(Drone targetDrone) {
 
+        //test per la concorrenza
+        /*try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }*/
+
         ManagedChannel channel = ManagedChannelBuilder.forTarget(targetDrone.getHost()+":"+targetDrone.getPort()).usePlaintext().build();
         DronesMessagesGrpc.DronesMessagesBlockingStub stub = DronesMessagesGrpc.newBlockingStub(channel);
         DronesMessagesOuterClass.DroneData request = DronesMessagesOuterClass.DroneData.newBuilder().setId(drone.getId()).setPort(drone.getPort()).setHost(drone.getHost()).build();
@@ -237,7 +236,12 @@ public class DroneController {
                 DronesMessagesOuterClass.Empty emptyReply = stub.sendDroneInfoToMaster(info);
             }
         }catch (Throwable t){
-            updateList(getByID(targetDrone.getId()));
+            Status status = Status.fromThrowable(t);
+            if (status.getDescription().equals("Election error.")) {
+                System.out.println(status.getDescription() + " Election currently in progress, the drone cannot join. Try to join again in a few seconds.");
+                System.exit(0);
+            }else
+                updateList(getByID(targetDrone.getId()));   //il caso in cui un drone è uscito dalla rete durante il greeting
         }
         finally {
             channel.shutdownNow();
@@ -256,26 +260,32 @@ public class DroneController {
     }
 
     //I metodi election ed elected hanno ricorsione nel caso in cui uno dei droni della rete (non il master che sarà già uscito) esca prima che l'elezione sia iniziata.
-    // Il nuovo drone a cui mandare il messaggio di election o di elected sarà il successivo del successivo e così via se quest'ultimo è offline.
+    //Il nuovo drone a cui mandare il messaggio di election o di elected sarà il successivo del successivo e così via se quest'ultimo è offline.
     public void election( Drone tokenDrone, Drone to){
 
-        System.out.println("Election of the new master started!");
-        ManagedChannel channel = null;
-        try {
-            channel = ManagedChannelBuilder.forTarget(to.getHost() + ":" + to.getPort()).usePlaintext().build();
-            DronesMessagesGrpc.DronesMessagesBlockingStub stub = DronesMessagesGrpc.newBlockingStub(channel);
-            DronesMessagesOuterClass.DroneData request = DronesMessagesOuterClass.DroneData.newBuilder().setId(tokenDrone.getId()).setPort(tokenDrone.getPort()).setHost(tokenDrone.getHost()).setBattery(tokenDrone.getBatteryLevel()).build();
+        System.out.println("L'elezione del nuovo master è in corso...");
 
-            DronesMessagesOuterClass.Empty reply = stub.election(request);
-        } catch (Throwable t) {
-            Drone newTo = getDronesList().get(getDronesList().indexOf(to) + 1);
-            election(tokenDrone, newTo);
-        }
-        finally {
-            if(channel != null)
-                channel.shutdownNow();
-        }
+        if (dronesList.size() == 1){
+            drone.setMaster(true);
+            setMasterInfos(drone.getId(), drone.getPort(), drone.getHost());
+            MasterDroneController.getInstance().startDeliveryThreads();
 
+        }else {
+            ManagedChannel channel = null;
+            try {
+                channel = ManagedChannelBuilder.forTarget(to.getHost() + ":" + to.getPort()).usePlaintext().build();
+                DronesMessagesGrpc.DronesMessagesBlockingStub stub = DronesMessagesGrpc.newBlockingStub(channel);
+                DronesMessagesOuterClass.DroneData request = DronesMessagesOuterClass.DroneData.newBuilder().setId(tokenDrone.getId()).setPort(tokenDrone.getPort()).setHost(tokenDrone.getHost()).setBattery(tokenDrone.getBatteryLevel()).build();
+
+                DronesMessagesOuterClass.Empty reply = stub.election(request);
+            } catch (Throwable t) {
+                Drone newTo = getDronesList().get(getDronesList().indexOf(to) + 1);
+                election(tokenDrone, newTo);
+            } finally {
+                if (channel != null)
+                    channel.shutdownNow();
+            }
+        }
     }
 
     public void elected( Drone tokenDrone, Drone to){

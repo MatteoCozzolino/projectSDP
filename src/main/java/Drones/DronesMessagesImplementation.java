@@ -4,6 +4,7 @@ import Dronazon.DeliveriesGenerator;
 import Model.Coordinates;
 import Model.Drone;
 import Model.DroneStats;
+import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import proto.DronesMessagesGrpc;
 import proto.DronesMessagesOuterClass;
@@ -12,6 +13,9 @@ public class DronesMessagesImplementation extends DronesMessagesGrpc.DronesMessa
 
     @Override
     public void greet(DronesMessagesOuterClass.DroneData request, StreamObserver<DronesMessagesOuterClass.DroneData> response) {
+
+        if (DroneController.getInstance().electionInProgress)
+            response.onError(Status.FAILED_PRECONDITION.withDescription("Election error.").asException());
 
         DronesMessagesOuterClass.DroneData master = null;
         Drone newDrone = new Drone(request.getId(), request.getPort(),request.getHost());
@@ -44,40 +48,32 @@ public class DronesMessagesImplementation extends DronesMessagesGrpc.DronesMessa
     public void election(DronesMessagesOuterClass.DroneData request, StreamObserver<DronesMessagesOuterClass.Empty> response) {
 
         //rimuove il vecchio master
-        DroneController.getInstance().updateList(DroneController.getInstance().getByID(DroneController.getInstance().masterID));
+        if (DroneController.getInstance().getDronesList().contains(DroneController.getInstance().getByID(DroneController.getInstance().masterID)))
+            DroneController.getInstance().updateList(DroneController.getInstance().getByID(DroneController.getInstance().masterID));
 
         if (request.getBattery() == DroneController.getInstance().getCurrDrone().getBatteryLevel()) {
 
-            System.out.println(request.getBattery() + " token battery quando uguali" + DroneController.getInstance().getCurrDrone().getBatteryLevel());
+            System.out.println("Ugual livello di batteria: " + DroneController.getInstance().getCurrDrone().getBatteryLevel());
             if (request.getId() > DroneController.getInstance().getCurrDrone().getId()) {
                 Drone to = new Drone(DroneController.getInstance().getSuccDrone().getId(), DroneController.getInstance().getSuccDrone().getPort(), DroneController.getInstance().getSuccDrone().getHost());
                 Drone tokenDrone = new Drone(request.getId(), request.getPort(), request.getHost());
                 tokenDrone.setBatteryLevel(request.getBattery());
                 DroneController.getInstance().electionInProgress = true;
-                System.out.println("tokenid>currid" + request.getId() + "   " + DroneController.getInstance().getCurrDrone().getId());
+                System.out.println("L'ID del token: " + request.getId() + " è maggiore del drone corrente: " + DroneController.getInstance().getCurrDrone().getId() + " allora inoltro il token al drone successivo.");
                 DroneController.getInstance().election(tokenDrone, to);
-
-                //response.onNext(DronesMessagesOuterClass.Empty.newBuilder().build());
-                //response.onCompleted();
             }
 
             if (request.getId() < DroneController.getInstance().getCurrDrone().getId()) {
-
-                //if (!DroneController.getInstance().electionInProgress) {
-
                 Drone to = new Drone(DroneController.getInstance().getSuccDrone().getId(), DroneController.getInstance().getSuccDrone().getPort(), DroneController.getInstance().getSuccDrone().getHost());
                 Drone tokenDrone = new Drone(DroneController.getInstance().getCurrDrone().getId(), DroneController.getInstance().getCurrDrone().getPort(), DroneController.getInstance().getCurrDrone().getHost());
                 tokenDrone.setBatteryLevel(DroneController.getInstance().getCurrDrone().getBatteryLevel());
                 DroneController.getInstance().electionInProgress = true;
                 DroneController.getInstance().election(tokenDrone, to);
-                //} else {
-                //response.onNext(DronesMessagesOuterClass.Empty.newBuilder().build());
-                //response.onCompleted();
-                //}
+
             }
             if (request.getId() == DroneController.getInstance().getCurrDrone().getId()) {
 
-                System.out.println("tokenid==currid " + request.getId() + "   " + DroneController.getInstance().getCurrDrone().getId());
+                System.out.println("L'ID del token: " + request.getId() + " è uguale all'ID del drone corrente: " + DroneController.getInstance().getCurrDrone().getId() + " allora sono il drone Master.");
                 //currentDrone è il master
                 DroneController.getInstance().getCurrDrone().setMaster(true);
                 DroneController.getInstance().setMasterInfos(DroneController.getInstance().getCurrDrone().getId(), DroneController.getInstance().getCurrDrone().getPort(), DroneController.getInstance().getCurrDrone().getHost());
@@ -88,9 +84,6 @@ public class DronesMessagesImplementation extends DronesMessagesGrpc.DronesMessa
                 Drone tokenDrone = new Drone(DroneController.getInstance().getCurrDrone().getId(), DroneController.getInstance().getCurrDrone().getPort(), DroneController.getInstance().getCurrDrone().getHost());
                 DroneController.getInstance().elected(tokenDrone, to);
 
-                //response.onNext(DronesMessagesOuterClass.Empty.newBuilder().build());
-                //response.onCompleted();
-                System.out.println("sono il master eletto"); //temp
             }
             response.onNext(DronesMessagesOuterClass.Empty.newBuilder().build());
             response.onCompleted();
@@ -102,7 +95,7 @@ public class DronesMessagesImplementation extends DronesMessagesGrpc.DronesMessa
             tokenDrone.setBatteryLevel(request.getBattery());
             DroneController.getInstance().electionInProgress = true;
             DroneController.getInstance().election(tokenDrone,to);
-            System.out.println("mando elezione a succ");    //temp
+            System.out.println("Mando token a drone successivo");
 
             response.onNext(DronesMessagesOuterClass.Empty.newBuilder().build());
             response.onCompleted();
@@ -111,8 +104,6 @@ public class DronesMessagesImplementation extends DronesMessagesGrpc.DronesMessa
         if (request.getBattery() < DroneController.getInstance().getCurrDrone().getBatteryLevel()) {
 
             if (!DroneController.getInstance().electionInProgress) {
-
-                System.out.println("aaaaaaaaaaa");
 
                 Drone to = new Drone(DroneController.getInstance().getSuccDrone().getId(), DroneController.getInstance().getSuccDrone().getPort(), DroneController.getInstance().getSuccDrone().getHost());
                 Drone tokenDrone = new Drone(DroneController.getInstance().getCurrDrone().getId(), DroneController.getInstance().getCurrDrone().getPort(), DroneController.getInstance().getCurrDrone().getHost());
@@ -124,9 +115,6 @@ public class DronesMessagesImplementation extends DronesMessagesGrpc.DronesMessa
                 response.onCompleted();
             }
         }
-
-            //response.onNext(DronesMessagesOuterClass.Empty.newBuilder().build());
-            //response.onCompleted();
     }
 
 
@@ -160,9 +148,16 @@ public class DronesMessagesImplementation extends DronesMessagesGrpc.DronesMessa
     public void assignDelivery(DronesMessagesOuterClass.DeliveryInfo request, StreamObserver<DronesMessagesOuterClass.Empty> response){
 
         if (DroneController.getInstance().notDelivering && DroneController.getInstance().getCurrDrone().getBatteryLevel() > 15) {
-            DroneController.getInstance().setDelivery(new DeliveriesGenerator(request.getDeliveryID(), new Coordinates(request.getPickUpX(), request.getPickUpY()), new Coordinates(request.getDeliveryX(), request.getDeliveryY())));
-            response.onNext(DronesMessagesOuterClass.Empty.newBuilder().build());
-            response.onCompleted();
+            if (DroneController.getInstance().lastDeliveryID != request.getDeliveryID()) {
+                DeliveriesGenerator newDelivery = new DeliveriesGenerator(request.getDeliveryID(), new Coordinates(request.getPickUpX(), request.getPickUpY()), new Coordinates(request.getDeliveryX(), request.getDeliveryY()));
+                DroneController.getInstance().setDelivery(newDelivery);
+                response.onNext(DronesMessagesOuterClass.Empty.newBuilder().build());
+                response.onCompleted();
+                }
+            else{
+                response.onNext(DronesMessagesOuterClass.Empty.newBuilder().build());
+                response.onCompleted();
+            }
 
         }else
             response.onError(new Throwable());

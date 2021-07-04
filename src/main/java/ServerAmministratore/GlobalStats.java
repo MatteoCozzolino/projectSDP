@@ -15,7 +15,7 @@ public class GlobalStats {
     private static GlobalStats globalStatsInstance;
 
     @XmlElement(name="globalStats")
-    private ArrayList <GlobalStat> globalStatsList;
+    private final ArrayList <GlobalStat> globalStatsList;
 
     private GlobalStats(){
         globalStatsList = new ArrayList<GlobalStat>() {};
@@ -30,10 +30,6 @@ public class GlobalStats {
     public boolean addGlobalStatValue (GlobalStat stats){
 
         globalStatsList.add(stats);
-
-        for (GlobalStat a :globalStatsList)         //temp
-            System.out.println(a.getAvgKm()+" <-global stats" + a.getTimestamp());
-
         return true;
     }
 
@@ -45,9 +41,12 @@ public class GlobalStats {
 
         ArrayList<GlobalStat> orderedList = new ArrayList<>();
 
-        for (int i = tempStatList.size(); i != 0 ; i--)
-            orderedList.add(tempStatList.get(i - 1));
-
+        for (int i = tempStatList.size(); i != 0 ; i--) {
+            if (tempStatList.get(i - 1).getTimestamp() == 0)
+                tempStatList.remove(i - 1);
+            else
+                orderedList.add(tempStatList.get(i - 1));
+        }
         ArrayList<GlobalStat> requiredList = new ArrayList<>();
         for (int i = 0; i < n && i < orderedList.size() ; i++){
             requiredList.add(orderedList.get(i));
@@ -56,20 +55,19 @@ public class GlobalStats {
         return requiredList;
     }
 
-    public float getDelivMed(int t1, int t2) {
+    public float getDelivMed(float t1, float t2) {
 
         float sum = 0;
         int counter = 0;
         HashMap<Float,GlobalStat> tempStatList = new HashMap<>();
 
         for (GlobalStat globalStat : globalStatsList)
-            tempStatList.put(globalStat.getTimestamp(), globalStat);
-
-        tempStatList.remove(globalStatsList.get(0).getTimestamp());
+            if (globalStat.getTimestamp() != 0)
+                tempStatList.put(globalStat.getTimestamp(), globalStat);
 
         for (Map.Entry<Float,GlobalStat> element : tempStatList.entrySet()){
 
-            if (element.getKey() >= (float) t1 && element.getKey() <= (float) t2){
+            if (element.getKey() >= t1 && element.getKey() <= t2){
                 sum += element.getValue().getAvgNumberDeliveries();
                 counter++;
             }
@@ -77,16 +75,15 @@ public class GlobalStats {
         return sum/counter;
     }
 
-    public float getKMMed(int t1, int t2) {
+    public float getKMMed(float t1, float t2) {
 
         float sum = 0;
         int counter = 0;
         HashMap<Float,GlobalStat> tempStatList = new HashMap<>();
 
         for (GlobalStat globalStat : globalStatsList)
-            tempStatList.put(globalStat.getTimestamp(), globalStat);
-
-        tempStatList.remove(globalStatsList.get(0).getTimestamp());
+            if (globalStat.getTimestamp() != 0)
+                tempStatList.put(globalStat.getTimestamp(), globalStat);
 
         for (Map.Entry<Float,GlobalStat> element : tempStatList.entrySet()){
 

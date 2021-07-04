@@ -19,12 +19,12 @@ DronesServices.java
  DronesServices$MasterDrone$1
  DronesServices$MasterDrone$Builder
  DronesServices$MasterDroneOrBuilder
+Model/Drone.java
+ Model.Drone
+Drones/Threads/PingThread.java
+ Drones.Threads.PingThread
 ServerAmministratore/StartServer.java
  ServerAmministratore.StartServer
-ServerAmministratore/Drones.java
- ServerAmministratore.Drones
-Drones/SensorSimulator/Buffer.java
- Drones.SensorSimulator.Buffer
 Drones/SensorSimulator/PM10Simulator.java
  Drones.SensorSimulator.PM10Simulator
 proto/DronesMessagesOuterClass.java
@@ -50,34 +50,32 @@ proto/DronesMessagesOuterClass.java
  proto.DronesMessagesOuterClass$Empty$1
  proto.DronesMessagesOuterClass$Empty$Builder
  proto.DronesMessagesOuterClass$EmptyOrBuilder
-Model/GlobalStat.java
- Model.GlobalStat
-Dronazon/Dronazon.java
- Dronazon.Dronazon
-Amministratore/AdminInterface.java
- Amministratore.AdminInterface
-ServerAmministratore/DroneServices.java
- ServerAmministratore.DroneServices
-ServerAmministratore/GlobalStats.java
- ServerAmministratore.GlobalStats
- ServerAmministratore.GlobalStats$1
+Drones/DronesMessagesImplementation.java
+ Drones.DronesMessagesImplementation
+Drones/SensorSimulator/Buffer.java
+ Drones.SensorSimulator.Buffer
+Drones/SensorSimulator/BufferImpl.java
+ Drones.SensorSimulator.BufferImpl
+Drones/DroneController.java
+ Drones.DroneController
+Drones/DroneStarter.java
+ Drones.DroneStarter
 Model/Coordinates.java
  Model.Coordinates
-Drones/DroneRESTClient.java
- Drones.DroneRESTClient
- Drones.DroneRESTClient$1
+Drones/Threads/StatsThread.java
+ Drones.Threads.StatsThread
 Dronazon/DeliveriesGenerator.java
  Dronazon.DeliveriesGenerator
-ServerAmministratore/GlobalStatsServices.java
- ServerAmministratore.GlobalStatsServices
+Drones/Threads/InputListenerThread.java
+ Drones.Threads.InputListenerThread
 Amministratore/AdminRESTClient.java
  Amministratore.AdminRESTClient
  Amministratore.AdminRESTClient$1
  Amministratore.AdminRESTClient$2
 Drones/SensorSimulator/Simulator.java
  Drones.SensorSimulator.Simulator
-Model/Drone.java
- Model.Drone
+Dronazon/Dronazon.java
+ Dronazon.Dronazon
 Model/DroneStats.java
  Model.DroneStats
 proto/DronesMessagesGrpc.java
@@ -93,20 +91,22 @@ proto/DronesMessagesGrpc.java
  proto.DronesMessagesGrpc$MethodHandlers
 Drones/Threads/PeerListenerThread.java
  Drones.Threads.PeerListenerThread
-Drones/DronesMessagesImplementation.java
- Drones.DronesMessagesImplementation
-Drones/DroneController.java
- Drones.DroneController
-Drones/Threads/InputListenerThread.java
- Drones.Threads.InputListenerThread
-Drones/Threads/StatsThread.java
- Drones.Threads.StatsThread
-Drones/DroneStarter.java
- Drones.DroneStarter
-Drones/Threads/PingThread.java
- Drones.Threads.PingThread
+Amministratore/AdminInterface.java
+ Amministratore.AdminInterface
+ServerAmministratore/DroneServices.java
+ ServerAmministratore.DroneServices
+ServerAmministratore/Drones.java
+ ServerAmministratore.Drones
+ServerAmministratore/GlobalStats.java
+ ServerAmministratore.GlobalStats
+ ServerAmministratore.GlobalStats$1
+Drones/DroneRESTClient.java
+ Drones.DroneRESTClient
+ Drones.DroneRESTClient$1
+ServerAmministratore/GlobalStatsServices.java
+ ServerAmministratore.GlobalStatsServices
 Drones/MasterDroneController.java
  Drones.MasterDroneController
  Drones.MasterDroneController$1
-Drones/SensorSimulator/BufferImpl.java
- Drones.SensorSimulator.BufferImpl
+Model/GlobalStat.java
+ Model.GlobalStat

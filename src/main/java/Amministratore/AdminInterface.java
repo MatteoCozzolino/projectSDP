@@ -3,6 +3,7 @@ package Amministratore;
 import Model.Drone;
 import Model.GlobalStat;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -29,42 +30,45 @@ public class AdminInterface {
 
         while (true){
 
-            System.out.println("\nPlease pick the desired request:\n1- Get the list of drones in the network\n2- Get the last n global statistics of the smart city\n3- Get the" +
-                    " average number of deliveries in the smart city between two timestamps\n4- Get the average number of km done by drones in the smart city between " +
-                    "two timestamps\n5- Close\n\n");
+            System.out.println("\nScegli l'opzione desiderata:\n1- Mostra la lista dei drone nella smart city\n2- Mostra le ultime n statistiche globali\n3- Mostra" +
+                    " la media delle consegne effettuate tra due timestamp\n4- Mostra la media dei km percorsi dai droni tra due timestamp\n5- Chiudi l'admin interface\n\n");
             choice = choiceListener.nextInt();
 
             switch (choice){
                 case 1 :
                     ArrayList<Drone> drones = AdminRESTClient.getInstance().droneListRequest();
-                    System.out.println("Displaying Ids of the drones in the list.");
+                    System.out.println("Mostro gli ID dei droni nella smart city.");
                     for (Drone drone : drones)
                         System.out.println(drone.getId());
                     break;
                 case 2 :
-                    System.out.println("How many of the most recent global statistics do you wish to have?\n");
+                    System.out.println("Quante tra le ultime statistiche globali devono essere mostrate?\n");
                     int n = choiceListener.nextInt();
                     ArrayList<GlobalStat> globalStats = AdminRESTClient.getInstance().lastStatsRequest(n);
-                    System.out.println("Displaying " + n + " last global stats.");
+                    System.out.println("Mostro la ultime " + n + " statistiche globali.");
                     for (GlobalStat stat : globalStats)
                         System.out.println("\nMedie al timestamp " + stat.getTimestamp() + ":\nconsegne - " + stat.getAvgNumberDeliveries() + "\nkm - " + stat.getAvgKm() + "\nPM10 - " + stat.getAvgPM10() + "\nbatteria - " + stat.getAvgResidualBatteries());
                     break;
                 case 3 :
-                    System.out.println("Between which timestamps do you want the average? Pick values between 0 and 60 seconds\n");
-                    int t1 = choiceListener.nextInt();
-                    int t2 = choiceListener.nextInt();
+                    String ts = new Timestamp(System.currentTimeMillis()).toString().substring(14);
+                    float tsInSeconds = (Float.parseFloat(ts.substring(0,2))*60) + Float.parseFloat(ts.substring(3));
+                    System.out.println("Tra quali timestamp vuoi la media? Il timestamp corrente è: " + tsInSeconds);
+                    float t1 = choiceListener.nextFloat();
+                    float t2 = choiceListener.nextFloat();
                     float avgDeliv = AdminRESTClient.getInstance().avgDeliveriesRequest(t1,t2);
-                    System.out.println("\nThe average number of deliveries done by drones is: " + avgDeliv);
+                    System.out.println("\nLa media delle consegne effettuate dai droni è: " + avgDeliv);
                     break;
                 case 4 :
-                    System.out.println("Between which timestamps do you want the average? Pick values between 0 and 60 seconds\n");
-                    int time1 = choiceListener.nextInt();
-                    int time2 = choiceListener.nextInt();
+                    String tsKM = new Timestamp(System.currentTimeMillis()).toString().substring(14);
+                    float tsInSecondsKM = (Float.parseFloat(tsKM.substring(0,2))*60) + Float.parseFloat(tsKM.substring(3));
+                    System.out.println("Tra quali timestamp vuoi la media? Il timestamp corrente è: " + tsInSecondsKM);
+                    float time1 = choiceListener.nextInt();
+                    float time2 = choiceListener.nextInt();
                     float avgKM = AdminRESTClient.getInstance().avgKMRequest(time1,time2);
-                    System.out.println("\nThe average Km done by drones is: " + avgKM);
+                    System.out.println("\nLa media dei km percorsi dai droni è: " + avgKM);
                     break;
                 case 5 :
-                    System.out.println("Thanks for using our services, the client will shut down!");
+                    System.out.println("Grazie per aver usato i nostri servizi, il client si spegnerà!");
                     return;
                 default:
                     break;

@@ -38,7 +38,7 @@ public class GlobalStatsServices {
     @Path("mediaDeliveries/{t1}/{t2}")
     @GET
     @Produces({"application/json", "application/xml"})
-    public Response getDelivMed (@PathParam("t1") int t1, @PathParam("t2") int t2) {
+    public Response getDelivMed (@PathParam("t1") float t1, @PathParam("t2") float t2) {
 
         float med = GlobalStats.getGlobalStatsInstance().getDelivMed(t1,t2);
         return Response.ok(med).build();
@@ -48,7 +48,7 @@ public class GlobalStatsServices {
     @Path("mediaKM/{t1}/{t2}")
     @GET
     @Produces({"application/json", "application/xml"})
-    public Response getKMMed (@PathParam("t1") int t1, @PathParam("t2") int t2) {
+    public Response getKMMed (@PathParam("t1") float t1, @PathParam("t2") float t2) {
 
         float med = GlobalStats.getGlobalStatsInstance().getKMMed(t1,t2);
         return Response.ok(med).build();
