@@ -16,23 +16,23 @@ public class DronesMessagesImplementation extends DronesMessagesGrpc.DronesMessa
 
         if (DroneController.getInstance().electionInProgress)
             response.onError(Status.FAILED_PRECONDITION.withDescription("Election error.").asException());
+        else {
+            DronesMessagesOuterClass.DroneData master = null;
+            Drone newDrone = new Drone(request.getId(), request.getPort(), request.getHost());
 
-        DronesMessagesOuterClass.DroneData master = null;
-        Drone newDrone = new Drone(request.getId(), request.getPort(),request.getHost());
+            if (request.getId() != DroneController.getInstance().getCurrDrone().getId()) {
 
-        if (request.getId() != DroneController.getInstance().getCurrDrone().getId()){
+                DroneController.getInstance().addDroneToList(newDrone);
 
-            DroneController.getInstance().addDroneToList(newDrone);
+                if (DroneController.getInstance().getCurrDrone().isMaster())
+                    master = DronesMessagesOuterClass.DroneData.newBuilder().setId(DroneController.getInstance().getCurrDrone().getId()).setPort(DroneController.getInstance().getCurrDrone().getPort()).setHost(DroneController.getInstance().getCurrDrone().getHost()).build();
 
-            if (DroneController.getInstance().getCurrDrone().isMaster())
-                master = DronesMessagesOuterClass.DroneData.newBuilder().setId(DroneController.getInstance().getCurrDrone().getId()).setPort(DroneController.getInstance().getCurrDrone().getPort()).setHost(DroneController.getInstance().getCurrDrone().getHost()).build();
+            }
 
+            response.onNext(master);
+            response.onCompleted();
         }
-
-        response.onNext(master);
-        response.onCompleted();
     }
-
     @Override
     public void sendStats (DronesMessagesOuterClass.DroneStats request, StreamObserver<DronesMessagesOuterClass.Empty> response) {
 

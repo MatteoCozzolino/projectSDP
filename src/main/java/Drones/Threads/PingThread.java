@@ -17,13 +17,12 @@ public class PingThread extends Thread{
 
         while (true) {
 
-            if (DroneController.getInstance().getDronesList().size() == 1 && !DroneController.getInstance().getCurrDrone().isMaster())
+            if (DroneController.getInstance().getDronesList().size() == 1 && !DroneController.getInstance().getCurrDrone().isMaster()) {
                 DroneController.getInstance().election(DroneController.getInstance().getCurrDrone(), DroneController.getInstance().getSuccDrone());
-
-            if (!pingSucc(succDrone)) {
+            }
+            if (!pingSucc(succDrone) && !DroneController.getInstance().electionInProgress) {
 
                 if (succDrone.isMaster()) {
-
                     DroneController.getInstance().updateList(succDrone);
                     DroneController.getInstance().election(DroneController.getInstance().getCurrDrone(), DroneController.getInstance().getSuccDrone());
                 }
@@ -41,12 +40,11 @@ public class PingThread extends Thread{
                 }
             }
 
-            if (succDrone != DroneController.getInstance().getSuccDrone())
-                succDrone= DroneController.getInstance().getSuccDrone();
+            succDrone= DroneController.getInstance().getSuccDrone();
 
             //Il Thread aspetta 5 secondi prima di inviare un altro ping
             try {
-                Thread.sleep(5000);
+                Thread.sleep(10000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -76,14 +74,19 @@ public class PingThread extends Thread{
     private void removeDrone(Drone targetDrone, Drone offDrone) {
 
         if (targetDrone.getPort() != offDrone.getPort()) {
-            ManagedChannel channel = ManagedChannelBuilder.forTarget(targetDrone.getHost() + ":" + targetDrone.getPort()).usePlaintext().build();
-            DronesMessagesGrpc.DronesMessagesBlockingStub stub = DronesMessagesGrpc.newBlockingStub(channel);
-            DronesMessagesOuterClass.DroneData data = DronesMessagesOuterClass.DroneData.newBuilder().setId(offDrone.getId()).setHost(offDrone.getHost()).setPort(offDrone.getPort()).build();
+            ManagedChannel channel = null;
+            try {
+                channel = ManagedChannelBuilder.forTarget(targetDrone.getHost() + ":" + targetDrone.getPort()).usePlaintext().build();
+                DronesMessagesGrpc.DronesMessagesBlockingStub stub = DronesMessagesGrpc.newBlockingStub(channel);
+                DronesMessagesOuterClass.DroneData data = DronesMessagesOuterClass.DroneData.newBuilder().setId(offDrone.getId()).setHost(offDrone.getHost()).setPort(offDrone.getPort()).build();
 
-            DronesMessagesOuterClass.Empty reply = stub.remove(data);
-
-            channel.shutdownNow();
+                DronesMessagesOuterClass.Empty reply = stub.remove(data);
+            } catch (Exception ignored) {
+            } finally {
+                if (channel != null) {
+                    channel.shutdownNow();
+                }
+            }
         }
     }
-
 }

@@ -18,7 +18,7 @@ public class InputListenerThread extends Thread{
                     break;
                 }
                 else
-                    System.out.println("The drone is currently busy and its not possible to exit from the system, try again in a few seconds.");
+                    System.out.println("Il drone è al momento occupato e non è possibile uscire dal sistema, riprovare fra alcuni secondi.");
             }
         }
     }

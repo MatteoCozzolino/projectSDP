@@ -62,7 +62,7 @@ public class GlobalStats {
         HashMap<Float,GlobalStat> tempStatList = new HashMap<>();
 
         for (GlobalStat globalStat : globalStatsList)
-            if (globalStat.getTimestamp() != 0)
+            if (globalStat.getTimestamp() != 0 && globalStat.getAvgPM10() != 0)
                 tempStatList.put(globalStat.getTimestamp(), globalStat);
 
         for (Map.Entry<Float,GlobalStat> element : tempStatList.entrySet()){
@@ -82,7 +82,7 @@ public class GlobalStats {
         HashMap<Float,GlobalStat> tempStatList = new HashMap<>();
 
         for (GlobalStat globalStat : globalStatsList)
-            if (globalStat.getTimestamp() != 0)
+            if (globalStat.getTimestamp() != 0  && globalStat.getAvgPM10() != 0.0)
                 tempStatList.put(globalStat.getTimestamp(), globalStat);
 
         for (Map.Entry<Float,GlobalStat> element : tempStatList.entrySet()){

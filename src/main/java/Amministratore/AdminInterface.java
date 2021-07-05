@@ -30,7 +30,7 @@ public class AdminInterface {
 
         while (true){
 
-            System.out.println("\nScegli l'opzione desiderata:\n1- Mostra la lista dei drone nella smart city\n2- Mostra le ultime n statistiche globali\n3- Mostra" +
+            System.out.println("\nScegli l'opzione desiderata:\n1- Mostra la lista dei droni nella smart city\n2- Mostra le ultime n statistiche globali\n3- Mostra" +
                     " la media delle consegne effettuate tra due timestamp\n4- Mostra la media dei km percorsi dai droni tra due timestamp\n5- Chiudi l'admin interface\n\n");
             choice = choiceListener.nextInt();
 

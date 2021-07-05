@@ -1,6 +1,5 @@
 package ServerAmministratore;
-
-import Model.Coordinates;
+;
 import Model.Drone;
 
 import javax.xml.bind.annotation.XmlAccessType;

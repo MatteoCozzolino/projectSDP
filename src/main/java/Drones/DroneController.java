@@ -52,8 +52,11 @@ public class DroneController {
 
         grpcInitialize();
 
-        if (drone.getId() != succDrone.getId())
-            for (Drone targetDrone : dronesList) {
+        if (drone.getId() != succDrone.getId()) {
+            Object[] tempList = dronesList.toArray();
+
+            for (int i = 0; i < tempList.length; i++) {
+                Drone targetDrone = (Drone) tempList[i];
                 Thread greetThread = new Thread(() -> greeting(targetDrone));
                 greetThread.start();
                 try {
@@ -62,6 +65,7 @@ public class DroneController {
                     e.printStackTrace();
                 }
             }
+        }
 
         PingThread pingThread = new PingThread();
         pingThread.start();
@@ -152,10 +156,10 @@ public class DroneController {
 
     //questo metodo gestisce l'anello, assegnando al drone il suo successivo in ordine crescente per id, il metodo utilizza un id
     //inizialmente settato ad un valore molto grande per gestire la richiusura dell'anello su se stesso e collegare il drone
-    //con id più piccolo a quello con id più grande. Il metodo è synchronized per gestire connessioni simultanee.
+    //con id più piccolo a quello con id più grande.
     public synchronized Drone setSuccDrone() {
 
-        ArrayList<Drone> list = this.dronesList;
+        ArrayList<Drone> list = dronesList;
         boolean exists = false;
         int id = 9999999;
 
@@ -210,13 +214,6 @@ public class DroneController {
 
     private void greeting(Drone targetDrone) {
 
-        //test per la concorrenza
-        /*try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }*/
-
         ManagedChannel channel = ManagedChannelBuilder.forTarget(targetDrone.getHost()+":"+targetDrone.getPort()).usePlaintext().build();
         DronesMessagesGrpc.DronesMessagesBlockingStub stub = DronesMessagesGrpc.newBlockingStub(channel);
         DronesMessagesOuterClass.DroneData request = DronesMessagesOuterClass.DroneData.newBuilder().setId(drone.getId()).setPort(drone.getPort()).setHost(drone.getHost()).build();
@@ -248,15 +245,18 @@ public class DroneController {
         }
     }
 
-    private void sendStats(float timestamp, float km, double pm10){
+    private void sendStats(float timestamp, float km, double pm10) {
 
         ManagedChannel channel = ManagedChannelBuilder.forTarget(masterHost + ":" + masterPort).usePlaintext().build();
         DronesMessagesGrpc.DronesMessagesBlockingStub stub = DronesMessagesGrpc.newBlockingStub(channel);
         DronesMessagesOuterClass.DroneStats stats = DronesMessagesOuterClass.DroneStats.newBuilder().setTimestamp(timestamp).setCoordinateX(drone.getPosition_x()).setCoordinateY(drone.getPosition_y()).setKm(km).setAvgPM10(pm10).setBattery(drone.getBatteryLevel()).setDroneID(drone.getId()).build();
 
-        DronesMessagesOuterClass.Empty reply = stub.sendStats(stats);
-
-        channel.shutdownNow();
+        try {
+            DronesMessagesOuterClass.Empty reply = stub.sendStats(stats);
+        } catch (Exception ignored) {}
+        finally {
+            channel.shutdownNow();
+        }
     }
 
     //I metodi election ed elected hanno ricorsione nel caso in cui uno dei droni della rete (non il master che sarà già uscito) esca prima che l'elezione sia iniziata.
@@ -264,6 +264,13 @@ public class DroneController {
     public void election( Drone tokenDrone, Drone to){
 
         System.out.println("L'elezione del nuovo master è in corso...");
+
+        //sleep per testare alcuni casi limite
+        /*try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }*/
 
         if (dronesList.size() == 1){
             drone.setMaster(true);
@@ -279,8 +286,8 @@ public class DroneController {
 
                 DronesMessagesOuterClass.Empty reply = stub.election(request);
             } catch (Throwable t) {
-                Drone newTo = getDronesList().get(getDronesList().indexOf(to) + 1);
-                election(tokenDrone, newTo);
+                updateList(to);
+                election(tokenDrone, getSuccDrone());
             } finally {
                 if (channel != null)
                     channel.shutdownNow();
@@ -295,12 +302,10 @@ public class DroneController {
             channel = ManagedChannelBuilder.forTarget(to.getHost() + ":" + to.getPort()).usePlaintext().build();
             DronesMessagesGrpc.DronesMessagesBlockingStub stub = DronesMessagesGrpc.newBlockingStub(channel);
             DronesMessagesOuterClass.DroneData request = DronesMessagesOuterClass.DroneData.newBuilder().setId(tokenDrone.getId()).setPort(tokenDrone.getPort()).setHost(tokenDrone.getHost()).build();
-
             DronesMessagesOuterClass.Empty reply = stub.elected(request);
         }catch (Throwable t){
-            Drone newTo = getDronesList().get(getDronesList().indexOf(to) + 1);
-            elected(tokenDrone, newTo);
-
+            updateList(to);
+            elected(tokenDrone, getSuccDrone());
         }finally {
             if(channel != null)
                 channel.shutdownNow();
